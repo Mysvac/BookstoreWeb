@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="SpringBootMain" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
-    <module name="ConfigTemplate.main" />
+    <module name="bookstore.main" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="com.mythovac.configtemplate.MainApplicationKt" />
     <method v="2">
       <option name="Make" enabled="true" />
