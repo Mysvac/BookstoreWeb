@@ -36,7 +36,7 @@ class TableManager @Autowired constructor( private val jdbcTemplate: JdbcTemplat
 
     /**
      * 程序结束时，删除表
-     * 可不启用
+     * 可不启用，通过设置 drop.tables.on.close
      * */
     @PreDestroy
     fun onShutdown() {
