@@ -1,0 +1,37 @@
+# 设置服务器运行的端口
+server.port=14201
+
+# THYMELEAF文件存储模板 (Thymeleaf自动构建)
+# 是否启用thymeleaf缓存
+spring.thymeleaf.cache=true
+
+# 编译前检测模板是否存在
+spring.thymeleaf.check-template=true
+
+# 检查模板位置是否正确 (默认值: true)
+spring.thymeleaf.check-template-location=true
+
+# Content-Type 类型 (默认值: text/html)
+# spring.thymeleaf.content-type=text/html
+# "content-type"已经过时了, 现在使用 servlet.content-type
+spring.thymeleaf.servlet.content-type=text/html
+
+# 开启 MVC Thymeleaf 视图解析（默认值：true）
+spring.thymeleaf.enabled=true
+
+# 模板编码
+spring.thymeleaf.encoding=UTF-8
+
+# 要被排除在解析之外的视图名称列表，使用分号分隔 ( ; )
+spring.thymeleaf.excluded-view-names=
+#  要运行在模板上的模板模式。标准模板模式处理器（默认值：HTML） 高版本中，已经用宽泛的HTML代替了HTML5
+spring.thymeleaf.mode=HTML
+# 在构建 URL 时添加到视图名称前的前缀 (默认值: classpath:/templates/)
+spring.thymeleaf.prefix=classpath:/templates/
+
+# 在构建 URL 时添加到视图名称后的后缀（默认值：.html）
+spring.thymeleaf.suffix=
+# 现在为空，不在添加. 你需要 [return "xxx.html"] 而不是 [return "xxx"]。 这样更加精准且可读。
+
+# 静止直接访问静态资源（resources/static目录),必须通过Controller访问。Controller依然可以提供静态资源。
+# spring.web.resources.add-mappings=false
