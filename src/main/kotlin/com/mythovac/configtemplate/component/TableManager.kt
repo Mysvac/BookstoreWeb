@@ -71,8 +71,8 @@ class TableManager @Autowired constructor( private val jdbcTemplate: JdbcTemplat
     private fun createTableCart(){ jdbcTemplate.execute(createTableCartSQL) }
     private fun dropTableCart() { jdbcTemplate.execute(dropTableCartSQL) }
 
-    private fun createTableOperation(){ jdbcTemplate.execute(createTableOperationSQL) }
-    private fun dropTableOperation() { jdbcTemplate.execute(dropTableOperationSQL) }
+    private fun createTableOperation(){ jdbcTemplate.execute(createTableOrdersSQL) }
+    private fun dropTableOperation() { jdbcTemplate.execute(dropTableOrdersSQL) }
 
     private fun createTableBill(){ jdbcTemplate.execute(createTableBillSQL) }
     private fun dropTableBill() { jdbcTemplate.execute(dropTableBillSQL) }
@@ -85,23 +85,23 @@ class TableManager @Autowired constructor( private val jdbcTemplate: JdbcTemplat
     // 账号基本信息表
     private val createTableUserSQL = """
         CREATE TABLE IF NOT EXISTS users (
-        account CHAR(23) PRIMARY KEY,
-        phone CHAR(13) NOT NULL,
-        password CHAR(23) NOT NULL,
-        role CHAR(7) NOT NULL
+        uid CHAR(23) PRIMARY KEY,
+        phone CHAR(13) NOT NULL UNIQUE,
+        password CHAR(60) NOT NULL,
+        grade CHAR(7) NOT NULL CHECK( grade IN ('admin','vip','banned') )
         );
     """
 
     // 个性化信息表
     private val createTableUserProfileSQL = """
         CREATE TABLE IF NOT EXISTS userProfile (
-        account CHAR(23) PRIMARY KEY,
-        gender CHAR(7),
+        uid CHAR(23) PRIMARY KEY,
+        gender CHAR(7) CHECK( gender IN ('male','female','secrecy') ),
         address CHAR(47),
         username CHAR(23),
         email CHAR(47),
         profile CHAR(47),
-        CONSTRAINT FK_userProfile FOREIGN KEY (account) REFERENCES users (account)
+        CONSTRAINT FK_userProfile FOREIGN KEY (uid) REFERENCES users (uid)
         ON DELETE CASCADE
         ON UPDATE CASCADE
         );
@@ -110,44 +110,47 @@ class TableManager @Autowired constructor( private val jdbcTemplate: JdbcTemplat
     // 书籍信息表
     private val createTableBookSQL = """
         CREATE TABLE IF NOT EXISTS book (
-        bid INT AUTO_INCREMENT PRIMARY KEY,
+        bookid BIGINT AUTO_INCREMENT PRIMARY KEY,
         bookname CHAR(23) NOT NULL,
-        stock INT NOT NULL,
-        price INT NOT NULL,
-        sales INT NOT NULL,
+        stock INT NOT NULL CHECK( stock >= 0 ),
+        price INT NOT NULL CHECK( price >= 0 ),
+        sales INT NOT NULL CHECK( sales >= 0 ),
         author CHAR(23) NOT NULL,
-        profile CHAR(47)
+        profile CHAR(47),
+        available BOOL DEFAULT 0 CHECK ( available IN (0,1) )
         );
     """
 
     // 购物车表
     private val createTableCartSQL = """
         CREATE TABLE IF NOT EXISTS cart (
-        account CHAR(23) NOT NULL,
-        bid INT NOT NULL,
-        amount INT NOT NULL,
-        PRIMARY KEY (account, bid),
-        CONSTRAINT KF_cart_account FOREIGN KEY (account) REFERENCES users (account)
+        uid CHAR(23) NOT NULL,
+        bookid BIGINT NOT NULL,
+        amount INT NOT NULL CHECK( amount > 0 ),
+        PRIMARY KEY (uid, bookid),
+        CONSTRAINT KF_cart_account FOREIGN KEY (uid) REFERENCES users (uid)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
-        CONSTRAINT KF_cart_bid FOREIGN KEY (bid) REFERENCES book (bid)
+        CONSTRAINT KF_cart_bid FOREIGN KEY (bookid) REFERENCES book (bookid)
         ON DELETE CASCADE
         ON UPDATE CASCADE
         );
     """
 
     // 下单操作表
-    private val createTableOperationSQL = """
-        CREATE TABLE IF NOT EXISTS operation (
-        operid BIGINT AUTO_INCREMENT PRIMARY KEY,
-        account CHAR(23) NOT NULL,
-        bid INT NOT NULL,
-        amount INT NOT NULL,
-        status CHAR(7) NOT NULL,
-        CONSTRAINT KF_operation_account FOREIGN KEY (account) REFERENCES users (account)
+    private val createTableOrdersSQL = """
+        CREATE TABLE IF NOT EXISTS orders (
+        billid BIGINT AUTO_INCREMENT PRIMARY KEY,
+        uid CHAR(23) NOT NULL,
+        bookid BIGINT NOT NULL,
+        amount INT NOT NULL CHECK( amount > 0 ),
+        status CHAR(11) NOT NULL CHECK( status IN ('ongoing','finish','suspend') ),
+        otime DATETIME NOT NULL, 
+        sumprice BIGINT NOT NULL,
+        CONSTRAINT KF_operation_account FOREIGN KEY (uid) REFERENCES users (uid)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
-        CONSTRAINT KF_operation_bid FOREIGN KEY (bid) REFERENCES book (bid)
+        CONSTRAINT KF_operation_bid FOREIGN KEY (bookid) REFERENCES book (bookid)
         ON DELETE CASCADE
         ON UPDATE CASCADE
         );
@@ -156,15 +159,17 @@ class TableManager @Autowired constructor( private val jdbcTemplate: JdbcTemplat
     // 已完成的记录表
     private val createTableBillSQL = """
         CREATE TABLE IF NOT EXISTS bill (
-        billid BIGINT AUTO_INCREMENT PRIMARY KEY,
-        operid BIGINT NOT NULL UNIQUE,
-        account CHAR(23) NOT NULL,
-        bid INT NOT NULL,
-        amount INT NOT NULL,
-        CONSTRAINT KF_bill_account FOREIGN KEY (account) REFERENCES users (account) 
+        billid BIGINT PRIMARY KEY,
+        uid CHAR(23) NOT NULL,
+        bookid BIGINT NOT NULL,
+        amount INT NOT NULL CHECK( amount > 0 ),
+        status CHAR(11) NOT NULL CHECK( status IN ('finish','suspend') ),
+        otime DATETIME NOT NULL, 
+        sumprice BIGINT NOT NULL,
+        CONSTRAINT KF_bill_account FOREIGN KEY (uid) REFERENCES users (uid) 
         ON DELETE CASCADE
         ON UPDATE CASCADE,
-        CONSTRAINT KF_bill_bid FOREIGN KEY (bid) REFERENCES book (bid)
+        CONSTRAINT KF_bill_bid FOREIGN KEY (bookid) REFERENCES book (bookid)
         ON DELETE CASCADE
         ON UPDATE CASCADE
         );
@@ -178,7 +183,7 @@ class TableManager @Autowired constructor( private val jdbcTemplate: JdbcTemplat
 
     private val dropTableCartSQL = "DROP TABLE IF EXISTS cart;"
 
-    private val dropTableOperationSQL = "DROP TABLE IF EXISTS operation;"
+    private val dropTableOrdersSQL = "DROP TABLE IF EXISTS orders;"
 
     private val dropTableBillSQL = "DROP TABLE IF EXISTS bill;"
 
