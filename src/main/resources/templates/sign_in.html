@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>小小书屋-登入</title>
+    <link href="/style/sign_in.css" rel="stylesheet">
+</head>
+<body>
+
+    <div class="login-container">
+        <form class="login-form" method="post" action="/user/sign-in">
+            <h2>小小书屋-登录</h2>
+
+            <div class="input-group">
+                <label for="uid">账号：</label>
+                <input type="text" id="uid" name="uid" required>
+            </div>
+
+            <div class="input-group">
+                <label for="password">密码：</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+
+            <div class="register-info">
+                <p>登入自动注册</p>
+            </div>
+
+            <div class="submit-group">
+                <button type="submit">提交</button>
+            </div>
+            <div th:text="${error}" class="error_message"></div>
+        </form>
+    </div>
+
+</body>
+</html>

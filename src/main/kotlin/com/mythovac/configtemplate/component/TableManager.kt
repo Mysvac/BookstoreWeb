@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.CommandLineRunner
 import org.springframework.jdbc.core.JdbcTemplate
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
 
 
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Component
  * 创建表格，保证表格存在
  * */
 @Component
-class TableManager @Autowired constructor( private val jdbcTemplate: JdbcTemplate ) : CommandLineRunner {
+class TableManager(private val jdbcTemplate: JdbcTemplate, private val passwordEncoder: PasswordEncoder) : CommandLineRunner {
 
     /**
      * 获取application.properties中的自定义参数
@@ -32,6 +33,8 @@ class TableManager @Autowired constructor( private val jdbcTemplate: JdbcTemplat
         createTableCart()
         createTableOperation()
         createTableBill()
+        createTriggerTrgBill()
+        insertAdmin()
     }
 
     /**
@@ -41,6 +44,7 @@ class TableManager @Autowired constructor( private val jdbcTemplate: JdbcTemplat
     @PreDestroy
     fun onShutdown() {
         if(dropTablesOnClose.toBoolean()){
+            dropTriggerTrgBill()
             dropTableBill()
             dropTableOperation()
             dropTableCart()
@@ -77,6 +81,15 @@ class TableManager @Autowired constructor( private val jdbcTemplate: JdbcTemplat
     private fun createTableBill(){ jdbcTemplate.execute(createTableBillSQL) }
     private fun dropTableBill() { jdbcTemplate.execute(dropTableBillSQL) }
 
+    private fun createTriggerTrgBill(){ jdbcTemplate.execute(createTriggerTrgBillSQL) }
+    private fun dropTriggerTrgBill(){ jdbcTemplate.execute(dropTriggerTrgBillSQL) }
+
+    // 创建初始的管理员账号
+    private fun insertAdmin(){
+        val adminPwd: String = passwordEncoder.encode("adminPwd")
+        val insertAdminSQL = "INSERT INTO users (uid, password, grade) VALUES (?, ?, ?)"
+        jdbcTemplate.update(insertAdminSQL, "admin", adminPwd,"admin")
+    }
 
 
     /**
@@ -86,8 +99,7 @@ class TableManager @Autowired constructor( private val jdbcTemplate: JdbcTemplat
     private val createTableUserSQL = """
         CREATE TABLE IF NOT EXISTS users (
         uid CHAR(23) PRIMARY KEY,
-        phone CHAR(13) NOT NULL UNIQUE,
-        password CHAR(60) NOT NULL,
+        password CHAR(63) NOT NULL,
         grade CHAR(7) NOT NULL CHECK( grade IN ('admin','vip','banned') )
         );
     """
@@ -112,6 +124,7 @@ class TableManager @Autowired constructor( private val jdbcTemplate: JdbcTemplat
         CREATE TABLE IF NOT EXISTS book (
         bookid BIGINT AUTO_INCREMENT PRIMARY KEY,
         bookname CHAR(23) NOT NULL,
+        booktype CHAR(13) NOT NULL,
         stock INT NOT NULL CHECK( stock >= 0 ),
         price INT NOT NULL CHECK( price >= 0 ),
         sales INT NOT NULL CHECK( sales >= 0 ),
@@ -175,6 +188,22 @@ class TableManager @Autowired constructor( private val jdbcTemplate: JdbcTemplat
         );
     """
 
+    private val createTriggerTrgBillSQL = """
+        CREATE TRIGGER TRG_bill
+        AFTER UPDATE ON orders
+        FOR EACH ROW
+        BEGIN
+            IF NEW.status IN ('finish', 'suspend') THEN
+                -- 将符合条件的记录插入到 bill 表
+                INSERT INTO bill (billid, uid, bookid, amount, status, otime, sumprice)
+                VALUES (NEW.billid, NEW.uid, NEW.bookid, NEW.amount, NEW.status, NEW.otime, NEW.sumprice);
+        
+                -- 删除 orders 表中的这条记录
+                DELETE FROM orders WHERE billid = NEW.billid;
+            END IF;
+        END;
+    """
+
     private val dropTableUserSQL = "DROP TABLE IF EXISTS users;"
 
     private val dropTableUserProfileSQL = "DROP TABLE IF EXISTS userProfile;"
@@ -187,4 +216,5 @@ class TableManager @Autowired constructor( private val jdbcTemplate: JdbcTemplat
 
     private val dropTableBillSQL = "DROP TABLE IF EXISTS bill;"
 
+    private val dropTriggerTrgBillSQL = "DROP TRIGGER IF EXISTS TRG_bill;"
 }

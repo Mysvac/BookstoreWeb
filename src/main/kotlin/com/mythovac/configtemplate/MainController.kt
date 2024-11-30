@@ -1,5 +1,6 @@
 package com.mythovac.configtemplate
 
+import jakarta.servlet.http.HttpServletRequest
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
@@ -12,7 +13,7 @@ import java.time.LocalDateTime
 @Controller("main-controller")
 class MainController {
     @GetMapping("/")
-    fun hello(model: Model): String {
+    fun hello(request: HttpServletRequest, model: Model): String {
         val current = LocalDateTime.now().toString()
         // 模板model
         model.addAttribute("time", current)
