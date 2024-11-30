@@ -1,6 +1,6 @@
 package com.mythovac.configtemplate.controller
 
-import ch.qos.logback.core.model.Model
+
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpSession
 import org.springframework.stereotype.Controller
