@@ -4,7 +4,6 @@ import jakarta.servlet.http.HttpServletRequest
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
-import java.time.LocalDateTime
 
 
 /**
@@ -14,9 +13,9 @@ import java.time.LocalDateTime
 class MainController {
     @GetMapping("/")
     fun hello(request: HttpServletRequest, model: Model): String {
-        val current = LocalDateTime.now().toString()
         // 模板model
-        model.addAttribute("time", current)
+        val session = request.getSession(false)
+        if (session != null) { model.addAttribute(session.getAttribute("uid")) }
         return "main_page.html"
     }
 }
