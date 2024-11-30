@@ -6,7 +6,6 @@ import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.RowMapper
 import org.springframework.stereotype.Repository
-import java.sql.SQLException
 
 @Repository
 class UsersImpl(private val jdbcTemplate: JdbcTemplate) : UsersDao {
@@ -33,8 +32,6 @@ class UsersImpl(private val jdbcTemplate: JdbcTemplate) : UsersDao {
             return null
         }
     }
-
-
     override fun deleteByUid(uid: String) {
         val sql = "DELETE FROM users WHERE uid = ?"
         jdbcTemplate.update(sql, uid)

@@ -17,6 +17,6 @@ class MainController {
         val current = LocalDateTime.now().toString()
         // 模板model
         model.addAttribute("time", current)
-        return "hello_world.html"
+        return "main_page.html"
     }
 }
