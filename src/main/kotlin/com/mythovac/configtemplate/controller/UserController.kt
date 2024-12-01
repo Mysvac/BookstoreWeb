@@ -4,13 +4,14 @@ import com.mythovac.configtemplate.service.UserService
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 
 @Controller("user-controller")
 @RequestMapping("/user")
 class UserController(private val userService: UserService) {
 
-    @RequestMapping("/sign-in")
+    @PostMapping("/sign-in")
     fun userSignIn(request: HttpServletRequest,model: Model): String {
         val uid: String? = request.getParameter("uid")
         val password: String? = request.getParameter("password")
@@ -23,9 +24,8 @@ class UserController(private val userService: UserService) {
             return "sign_in.html"
         }
         if(userService.signIn(uid,password)) {
-            val session = request.getSession(true);
+            val session = request.getSession(true)
             session.setAttribute("uid", uid)
-            println(uid)
             return "redirect:/"
         }
         model.addAttribute("error", "用户名或密码错误")

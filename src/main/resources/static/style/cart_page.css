@@ -69,6 +69,7 @@ nav .search form {
     gap: 10px;                  /* 输入框和按钮之间的间隔 */
 }
 
+
 #search-input {
     padding: 5px 15px;          /* 内边距，增加输入框的可点击区域 */
     font-size: 14px;             /* 字体大小为14px */
@@ -100,10 +101,127 @@ nav .search form {
 /* 设置main区域的样式 */
 main {
     position: fixed;         /* 固定定位 */
+    width: 100%;
     top: 60px;                  /* 固定在视口顶部 */
     padding: 20px;         /* 设置内边距为20px */
     height: calc(100vh - 60px - 40px);      /* 限制主内容区域的最大高度为浏览器视口高度的80% */
     overflow-y: auto;      /* 如果内容溢出，显示垂直滚动条 */
+}
+
+/* 设置横幅区域的样式 */
+.banner {
+    background-color: #ddd;  /* 浅灰色背景 */
+    padding: 40px;           /* 设置内边距为40px */
+    text-align: center;      /* 文字居中对齐 */
+    border-radius: 8px;      /* 圆角效果 */
+    margin-bottom: 30px;     /* 下方外边距30px */
+}
+
+/* 设置横幅标题的样式 */
+.banner h1 {
+    font-size: 32px;         /* 字体大小为32px */
+    color: #333;             /* 深灰色文字 */
+}
+
+/* 设置横幅副标题的样式 */
+.banner p {
+    font-size: 18px;         /* 字体大小为18px */
+    color: #555;             /* 中灰色文字 */
+}
+/* 设置书籍列表的样式 */
+.books {
+    display: flex;                /* 使用flex布局使书籍横向排列 */
+    flex-direction: column;       /* 让书籍垂直排列 */
+    gap: 20px;                    /* 设置书籍之间的间隔为20px */
+    justify-content: flex-start;  /* 从顶部开始排列 */
+    padding: 20px;                /* 添加一些内边距 */
+}
+
+/* 设置每本书的样式 */
+.book {
+    display: flex;                /* 使用flex布局 */
+    align-items: center;          /* 垂直居中对齐 */
+    background-color: #fff;       /* 白色背景 */
+    padding: 15px;                /* 内边距15px */
+    width: 100%;                  /* 宽度为100%，根据父容器宽度决定 */
+    max-width: 1200px;            /* 限制最大宽度，避免书籍过于宽 */
+    border-radius: 8px;           /* 圆角效果 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* 轻微的阴影效果 */
+    text-align: left;             /* 文字左对齐 */
+    margin: 20px auto;
+}
+
+/* 设置书籍封面的样式 */
+.book img {
+    width: 120px;                 /* 设置图片宽度 */
+    height: 120px;                /* 高度固定 */
+    object-fit: contain;            /* 保持图片比例，裁剪超出部分 */
+    border-radius: 4px;           /* 圆角效果 */
+    margin-right: 20px;           /* 右侧间距 */
+}
+
+/* 设置书籍标题的样式 */
+.book h5 {
+    font-size: 18px;              /* 字体大小为18px */
+    margin: 0 0 10px 0;           /* 上下外边距为10px */
+    color: #333;                  /* 深灰色文字 */
+    font-weight: bold;            /* 加粗字体 */
+}
+
+/* 设置书籍作者名称的样式 */
+.book p {
+    font-size: 14px;              /* 字体大小为14px */
+    color: #666;                  /* 中灰色文字 */
+    margin: 5px 0;                /* 上下外边距 */
+}
+
+.profile {
+    margin: auto 4%;
+    width: 14%;
+}
+.money {
+    margin: auto 4%;
+    width: 10%;
+}
+
+/* 设置书籍价格的样式 */
+.sum-price {
+    font-size: 20px;              /* 字体大小为18px */
+    font-weight: bold;            /* 加粗字体 */
+    color: #000;                  /* 黑色文字 */
+    margin-top: 10px;             /* 顶部外边距 */
+}
+
+/* 设置购买按钮的样式 */
+.book button {
+    background-color: #007bff;    /* 按钮背景色 */
+    color: #fff;                  /* 按钮文字颜色 */
+    border: none;                 /* 去掉边框 */
+    padding: 10px 15px;           /* 按钮内边距 */
+    border-radius: 4px;           /* 圆角效果 */
+    cursor: pointer;              /* 鼠标悬停时显示手形光标 */
+    margin-left: auto;            /* 将按钮推到右侧 */
+}
+
+.book button:hover {
+    background-color: #0056b3;    /* 悬停时改变按钮颜色 */
+}
+
+/* 设置按钮的样式 */
+button {
+    background-color: #222; /* 深色背景 */
+    color: #fff;             /* 白色文字 */
+    border: none;            /* 去除默认的边框 */
+    padding: 10px 20px;      /* 设置内边距，垂直10px，水平20px */
+    border-radius: 4px;      /* 圆角效果 */
+    cursor: pointer;        /* 鼠标悬停时变为指针 */
+    margin-top: 10px;        /* 上方外边距10px */
+    transition: background-color 0.3s; /* 背景色变化的过渡效果 */
+}
+
+/* 设置按钮的鼠标悬停效果 */
+button:hover {
+    background-color: #444; /* 鼠标悬停时背景色变为深灰色 */
 }
 
 /* 设置页脚的样式 */

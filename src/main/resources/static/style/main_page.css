@@ -69,6 +69,7 @@ nav .search form {
     gap: 10px;                  /* 输入框和按钮之间的间隔 */
 }
 
+
 #search-input {
     padding: 5px 15px;          /* 内边距，增加输入框的可点击区域 */
     font-size: 14px;             /* 字体大小为14px */
@@ -100,6 +101,7 @@ nav .search form {
 /* 设置main区域的样式 */
 main {
     position: fixed;         /* 固定定位 */
+    width: 100%;
     top: 60px;                  /* 固定在视口顶部 */
     padding: 20px;         /* 设置内边距为20px */
     height: calc(100vh - 60px - 40px);      /* 限制主内容区域的最大高度为浏览器视口高度的80% */
@@ -154,8 +156,10 @@ main {
 
 /* 设置书籍封面的样式 */
 .book img {
-    width: 100%;             /* 图片宽度为100%，填满父元素 */
-    height: auto;            /* 高度自动保持比例 */
+    width: 170px;             /* 图片宽度为100%，填满父元素 */
+    min-height: 170px;
+    height: 170px;
+    object-fit: contain;
     border-radius: 4px;      /* 圆角效果 */
 }
 
@@ -193,7 +197,7 @@ button {
 
 /* 设置按钮的鼠标悬停效果 */
 button:hover {
-    background-color: #444; /* 鼠标悬停时背景色变为深灰色 */
+    background-color: #555; /* 鼠标悬停时背景色变为深灰色 */
 }
 
 /* 设置页脚的样式 */

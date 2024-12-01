@@ -42,7 +42,7 @@ class BookImpl(private val jdbcTemplate: JdbcTemplate) : BookDao {
 
     override fun findByAttr(bookid: Long, author: String, booktype: String, bookname: String): List<Book> {
         val sql = "SELECT * FROM book WHERE bookid = ? OR author LIKE ? OR booktype LIKE ? OR bookname LIKE ?"
-        return jdbcTemplate.query(sql, rowMapper, bookid, author, booktype, bookname)
+        return jdbcTemplate.query(sql, rowMapper, bookid, "%$author%", "%$booktype%", "%$bookname%")
     }
 
     override fun insert(book: Book) {

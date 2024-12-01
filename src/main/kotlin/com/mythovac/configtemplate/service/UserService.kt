@@ -12,12 +12,13 @@ import org.springframework.stereotype.Service
  * */
 @Service
 class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEncoder: PasswordEncoder) {
-    var userProfileImpl: UserProfileImpl = UserProfileImpl(jdbcTemplate)
-    var usersImpl: UsersImpl = UsersImpl(jdbcTemplate)
-    var bookImpl: BookImpl = BookImpl(jdbcTemplate)
-    var cartImpl: CartImpl = CartImpl(jdbcTemplate)
-    var ordersImpl: OrdersImpl = OrdersImpl(jdbcTemplate)
-    var billImpl: BillImpl = BillImpl(jdbcTemplate)
+    private var userProfileImpl: UserProfileImpl = UserProfileImpl(jdbcTemplate)
+    private var usersImpl: UsersImpl = UsersImpl(jdbcTemplate)
+    private var bookImpl: BookImpl = BookImpl(jdbcTemplate)
+    private var cartImpl: CartImpl = CartImpl(jdbcTemplate)
+    private var ordersImpl: OrdersImpl = OrdersImpl(jdbcTemplate)
+    private var billImpl: BillImpl = BillImpl(jdbcTemplate)
+    private var cartbookImpl: CartbookImpl = CartbookImpl(jdbcTemplate)
 
     /**
      * 注册普通账号
@@ -60,6 +61,9 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
     /**
      * 查询图书，加入和删除
      * */
+    fun findCartbookByUid(uid: String): List<Cartbook> {
+        return cartbookImpl.findCartbookByUid(uid)
+    }
     fun findAllBook(): List<Book> {
         return bookImpl.findAll()
     }
@@ -104,13 +108,21 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
     /**
      * 加入购物车，下单
      * */
-    fun insertCart(uid: String, bookid: Long) {
+    fun insertCart(uid: String, bookid: Long, amount: Int = -1) {
         val cart: Cart? = cartImpl.findByUidAndBookid(uid,bookid)
         if(cart == null) {
             cartImpl.insert(Cart(uid = uid, bookid = bookid, amount = 1))
             return
         }
-        cartImpl.update(Cart(uid = uid, bookid = bookid, amount = cart.amount+1))
+        if(amount == -1){
+            cartImpl.update(Cart(uid = uid, bookid = bookid, amount = cart.amount+1))
+        }
+        if(amount == 0 || amount<-1){
+            deleteCart(uid,bookid)
+        }
+        if(amount > 0){
+            cartImpl.update(Cart(uid = uid, bookid = bookid, amount = amount))
+        }
     }
     fun insertOrders(orders: Orders) {
         ordersImpl.insert(orders)

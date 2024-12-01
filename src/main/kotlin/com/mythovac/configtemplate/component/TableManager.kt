@@ -1,11 +1,15 @@
 package com.mythovac.configtemplate.component
 
+import com.mythovac.configtemplate.entity.Book
+import com.opencsv.CSVReader
 import jakarta.annotation.PreDestroy
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.CommandLineRunner
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
+import java.io.FileReader
+import java.io.IOException
 
 
 /**
@@ -34,6 +38,7 @@ class TableManager(private val jdbcTemplate: JdbcTemplate, private val passwordE
         createTableBill()
         createTriggerTrgBill()
         insertAdmin()
+        insertBook()
     }
 
     /**
@@ -90,6 +95,33 @@ class TableManager(private val jdbcTemplate: JdbcTemplate, private val passwordE
         jdbcTemplate.update(insertAdminSQL, "admin", adminPwd,"admin")
     }
 
+    private fun insertBook(){
+        val insertBookSQL = "INSERT INTO book (bookname, booktype, stock, price, sales, author, profile, available) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+        val csvFile: String = "src/main/resources/static/books.csv"
+        try{
+            val reader = CSVReader(FileReader(csvFile))
+            var line: Array<String>?
+            reader.readNext() // 跳过标题
+            while (reader.readNext().also { line = it } != null) {
+                if(line!!.size < 8) continue
+                val book = Book(
+                    bookid = 0,
+                    bookname = line[0],
+                    booktype = line[1],
+                    stock = line[2].toInt(),
+                    price = line[3].toInt(),
+                    sales = line[4].toInt(),
+                    author = line[5],
+                    profile = line[6],
+                    available = line[7].toInt())
+                jdbcTemplate.update(insertBookSQL, book.bookname, book.booktype, book.stock, book.price, book.sales, book.author, book.profile, book.available)
+            }
+        }
+        catch (e: IOException){
+            e.printStackTrace()
+        }
+    }
+
 
     /**
      * 具体的创建和删除的SQL语句
@@ -128,7 +160,7 @@ class TableManager(private val jdbcTemplate: JdbcTemplate, private val passwordE
         price INT NOT NULL CHECK( price >= 0 ),
         sales INT NOT NULL CHECK( sales >= 0 ),
         author CHAR(23) NOT NULL,
-        profile CHAR(47),
+        profile CHAR(255),
         available BOOL DEFAULT 0 CHECK ( available IN (0,1) )
         );
     """

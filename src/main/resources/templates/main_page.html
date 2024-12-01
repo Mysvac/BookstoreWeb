@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<html lang="zh">
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>小小书屋</title>
+
+
     <link href="/style/main_page.css" rel="stylesheet">
+    <script src="/scripts/insert-cart.js" defer></script>
 </head>
 <body>
 <header>
@@ -13,11 +15,11 @@
             <li class="logo"><a href="/">小小书屋</a></li>
             <li><a href="#">分类</a></li>
             <li><a href="#">推荐</a></li>
-            <li><a href="#">购物车</a></li>
-            <li><a href="#" th:text="${uid != null ? '我的账户' : '登入'}">我的账户</a></li>
+            <li><a href="/page/cart">购物车</a></li>
+            <li class="account"><a href="#" th:text="'用户：'+${uid}"></a></li>
             <li class="search">
-                <form action="#" method="get">
-                    <input id="search-input" type="text" placeholder="搜索书籍..." name="search"/>
+                <form action="/page/search" method="get">
+                    <input id="search-input" type="text" placeholder="搜索书籍..." name="info"/>
                     <input id="search-button" type="submit" value="搜索"/>
                 </form>
             </li>
@@ -33,226 +35,20 @@
 
     <section class="book-list">
         <h2>畅销图书</h2>
+
         <div class="books">
-            <div class="book">
-                <a href="#">
-                <img src="https://via.placeholder.com/150" alt="书籍1">
-                <h3>书籍标题 1</h3>
-                </a>
-                <p>作者：作者名</p>
-                <p class="price">￥59.99</p>
-                <button>加入购物车</button>
+            <div th:if="${#lists.isEmpty(books)}">
+                <p>未找到相关书籍</p>
             </div>
-            <div class="book">
-                <a href="#">
-                    <img src="https://via.placeholder.com/150" alt="书籍1">
-                    <h3>书籍标题 1</h3>
+            <div class="book" th:each="book : ${books}">
+                <a th:href="'/page/info'+'?'+'bookid='+${book.bookid}">
+                    <img class="book-image" th:src="@{/images/book/{bookname}.png(bookname=${book.bookname})}" th:alt="${book.bookname}">
+                    <h3 th:text="${book.bookname}">Book Title</h3>
                 </a>
-                <p>作者：作者名</p>
-                <p class="price">￥59.99</p>
-                <button>加入购物车</button>
+                <p th:text="'作者: ' + ${book.author}">Author Name</p>
+                <p class="price" th:text="'￥' + ${book.price/100} + '.' + ${book.price%100}">Price</p>
+                <button class="insert-to-cart" th:data-bookid="${book.bookid}">加入购物车</button>
             </div>
-            <div class="book">
-                <a href="#">
-                    <img src="https://via.placeholder.com/150" alt="书籍1">
-                    <h3>书籍标题 1</h3>
-                </a>
-                <p>作者：作者名</p>
-                <p class="price">￥59.99</p>
-                <button>加入购物车</button>
-            </div>
-            <div class="book">
-                <a href="#">
-                    <img src="https://via.placeholder.com/150" alt="书籍1">
-                    <h3>书籍标题 1</h3>
-                </a>
-                <p>作者：作者名</p>
-                <p class="price">￥59.99</p>
-                <button>加入购物车</button>
-            </div>
-            <div class="book">
-                <a href="#">
-                    <img src="https://via.placeholder.com/150" alt="书籍1">
-                    <h3>书籍标题 1</h3>
-                </a>
-                <p>作者：作者名</p>
-                <p class="price">￥59.99</p>
-                <button>加入购物车</button>
-            </div>
-            <div class="book">
-                <a href="#">
-                    <img src="https://via.placeholder.com/150" alt="书籍1">
-                    <h3>书籍标题 1</h3>
-                </a>
-                <p>作者：作者名</p>
-                <p class="price">￥59.99</p>
-                <button>加入购物车</button>
-            </div>
-            <div class="book">
-                <a href="#">
-                    <img src="https://via.placeholder.com/150" alt="书籍1">
-                    <h3>书籍标题 1</h3>
-                </a>
-                <p>作者：作者名</p>
-                <p class="price">￥59.99</p>
-                <button>加入购物车</button>
-            </div>
-            <div class="book">
-                <a href="#">
-                    <img src="https://via.placeholder.com/150" alt="书籍1">
-                    <h3>书籍标题 1</h3>
-                </a>
-                <p>作者：作者名</p>
-                <p class="price">￥59.99</p>
-                <button>加入购物车</button>
-            </div>
-            <div class="book">
-                <a href="#">
-                    <img src="https://via.placeholder.com/150" alt="书籍1">
-                    <h3>书籍标题 1</h3>
-                </a>
-                <p>作者：作者名</p>
-                <p class="price">￥59.99</p>
-                <button>加入购物车</button>
-            </div>
-            <div class="book">
-                <a href="#">
-                    <img src="https://via.placeholder.com/150" alt="书籍1">
-                    <h3>书籍标题 1</h3>
-                </a>
-                <p>作者：作者名</p>
-                <p class="price">￥59.99</p>
-                <button>加入购物车</button>
-            </div>
-            <div class="book">
-                <a href="#">
-                    <img src="https://via.placeholder.com/150" alt="书籍1">
-                    <h3>书籍标题 1</h3>
-                </a>
-                <p>作者：作者名</p>
-                <p class="price">￥59.99</p>
-                <button>加入购物车</button>
-            </div>
-            <div class="book">
-                <a href="#">
-                    <img src="https://via.placeholder.com/150" alt="书籍1">
-                    <h3>书籍标题 1</h3>
-                </a>
-                <p>作者：作者名</p>
-                <p class="price">￥59.99</p>
-                <button>加入购物车</button>
-            </div>
-            <div class="book">
-                <a href="#">
-                    <img src="https://via.placeholder.com/150" alt="书籍1">
-                    <h3>书籍标题 1</h3>
-                </a>
-                <p>作者：作者名</p>
-                <p class="price">￥59.99</p>
-                <button>加入购物车</button>
-            </div>
-            <div class="book">
-                <a href="#">
-                    <img src="https://via.placeholder.com/150" alt="书籍1">
-                    <h3>书籍标题 1</h3>
-                </a>
-                <p>作者：作者名</p>
-                <p class="price">￥59.99</p>
-                <button>加入购物车</button>
-            </div>
-            <div class="book">
-                <a href="#">
-                    <img src="https://via.placeholder.com/150" alt="书籍1">
-                    <h3>书籍标题 1</h3>
-                </a>
-                <p>作者：作者名</p>
-                <p class="price">￥59.99</p>
-                <button>加入购物车</button>
-            </div>
-            <div class="book">
-                <a href="#">
-                    <img src="https://via.placeholder.com/150" alt="书籍1">
-                    <h3>书籍标题 1</h3>
-                </a>
-                <p>作者：作者名</p>
-                <p class="price">￥59.99</p>
-                <button>加入购物车</button>
-            </div>
-            <div class="book">
-                <a href="#">
-                    <img src="https://via.placeholder.com/150" alt="书籍1">
-                    <h3>书籍标题 1</h3>
-                </a>
-                <p>作者：作者名</p>
-                <p class="price">￥59.99</p>
-                <button>加入购物车</button>
-            </div>
-            <div class="book">
-                <a href="#">
-                    <img src="https://via.placeholder.com/150" alt="书籍1">
-                    <h3>书籍标题 1</h3>
-                </a>
-                <p>作者：作者名</p>
-                <p class="price">￥59.99</p>
-                <button>加入购物车</button>
-            </div>
-            <div class="book">
-                <a href="#">
-                    <img src="https://via.placeholder.com/150" alt="书籍1">
-                    <h3>书籍标题 1</h3>
-                </a>
-                <p>作者：作者名</p>
-                <p class="price">￥59.99</p>
-                <button>加入购物车</button>
-            </div>
-            <div class="book">
-                <a href="#">
-                    <img src="https://via.placeholder.com/150" alt="书籍1">
-                    <h3>书籍标题 1</h3>
-                </a>
-                <p>作者：作者名</p>
-                <p class="price">￥59.99</p>
-                <button>加入购物车</button>
-            </div>
-            <div class="book">
-                <a href="#">
-                    <img src="https://via.placeholder.com/150" alt="书籍1">
-                    <h3>书籍标题 1</h3>
-                </a>
-                <p>作者：作者名</p>
-                <p class="price">￥59.99</p>
-                <button>加入购物车</button>
-            </div>
-            <div class="book">
-                <a href="#">
-                    <img src="https://via.placeholder.com/150" alt="书籍1">
-                    <h3>书籍标题 1</h3>
-                </a>
-                <p>作者：作者名</p>
-                <p class="price">￥59.99</p>
-                <button>加入购物车</button>
-            </div>
-            <div class="book">
-                <a href="#">
-                    <img src="https://via.placeholder.com/150" alt="书籍1">
-                    <h3>书籍标题 1</h3>
-                </a>
-                <p>作者：作者名</p>
-                <p class="price">￥59.99</p>
-                <button>加入购物车</button>
-            </div>
-            <div class="book">
-                <a href="#">
-                    <img src="https://via.placeholder.com/150" alt="书籍1">
-                    <h3>书籍标题 1</h3>
-                </a>
-                <p>作者：作者名</p>
-                <p class="price">￥59.99</p>
-                <button>加入购物车</button>
-            </div>
-
-
-
 
         </div>
     </section>

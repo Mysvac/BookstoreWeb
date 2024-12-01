@@ -34,11 +34,16 @@ dependencies {
     implementation 'mysql:mysql-connector-java:8.0.33'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation 'org.springframework.security:spring-security-crypto'
+    implementation 'com.opencsv:opencsv:5.9'
 
     testImplementation 'org.jetbrains.kotlin:kotlin-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-}
 
+
+}
+configurations.configureEach {
+    exclude group: 'commons-logging', module: 'commons-logging'
+}
 tasks.withType(KotlinCompile).configureEach {
     kotlinOptions {
         freeCompilerArgs = ['-Xjsr305=strict']
