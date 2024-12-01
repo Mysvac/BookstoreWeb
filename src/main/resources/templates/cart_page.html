@@ -37,6 +37,7 @@
             <div class="profile">
                 <h5 th:text="${book.bookname}">Book Title</h5>
                 <p th:text="'作者: ' + ${book.author}">Author Name</p>
+                <p th:text="'库存：'+${book.stock}"></p>
             </div>
             <div  class="money">
                 <p  class="single-price" th:text="'单价：￥' + ${book.price/100} + '.' + ${book.price%100}">Price</p>

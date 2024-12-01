@@ -10,6 +10,7 @@ class CartbookImpl(private val jdbcTemplate: JdbcTemplate) : CartbookDao  {
         Cartbook(
             uid = rs.getString("uid"),
             bookid = rs.getLong("bookid"),
+            stock = rs.getInt("stock"),
             amount = rs.getInt("amount"),
             bookname = rs.getString("bookname"),
             price = rs.getInt("price"),
@@ -19,7 +20,7 @@ class CartbookImpl(private val jdbcTemplate: JdbcTemplate) : CartbookDao  {
     }
     override fun findCartbookByUid(uid: String): List<Cartbook> {
         val sql = """
-            SELECT uid,cart.bookid AS bookid,amount,bookname,price,author,available FROM cart
+            SELECT uid,cart.bookid AS bookid,stock,amount,bookname,price,author,available FROM cart
             JOIN book ON cart.bookid = book.bookid
             WHERE uid = ?
         """
