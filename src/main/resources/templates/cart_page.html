@@ -42,7 +42,7 @@
             <div  class="money">
                 <p  class="single-price" th:text="'单价：￥' + ${book.price/100} + '.' + ${book.price%100}">Price</p>
                 <p>数量：<input type="number" class="booknum" th:value="${book.amount}"/></p>
-                <p class="sum-price" th:text="'总结：￥' + ${book.price*book.amount/100} + '.' + ${book.price*book.amount%100}">Sum Price</p>
+                <p class="sum-price" th:text="'总价：￥' + ${book.price*book.amount/100} + '.' + ${book.price*book.amount%100}">Sum Price</p>
             </div>
             <button class="update-num" th:data-bookid="${book.bookid}">更新数量</button>
             <button class="delete" th:data-bookid="${book.bookid}">删除</button>
