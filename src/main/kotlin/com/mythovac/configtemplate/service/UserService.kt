@@ -6,6 +6,8 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.security.crypto.password.PasswordEncoder
 
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 /**
  * 数据库操作的服务层
@@ -39,6 +41,10 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
         val res: Users = usersImpl.findByUid(uid) ?: return signUp(uid, password)
 
         return passwordEncoder.matches(password, res.password)
+    }
+    fun findGradeByUid(uid: String): String{
+        val res: Users? = usersImpl.findByUid(uid)
+        return res?.grade ?: "banned"
     }
     /**
      * 设置用户权限
@@ -75,6 +81,42 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
     }
     fun setBookInfo(book: Book) {
         bookImpl.update(book)
+    }
+    fun findBillAndOrderByUid(uid : String): List<BillDetail>{
+        val res: MutableList<BillDetail> = mutableListOf()
+        val orders = ordersImpl.findByAttr(uid=uid)
+        if(orders.isNotEmpty()){
+            for(order in orders){
+                val bookname = bookImpl.findByBookid(order.bookid)!!.bookname
+                res.add(BillDetail(
+                    billid = order.billid,
+                    uid = order.uid,
+                    bookid = order.bookid,
+                    amount = order.amount,
+                    status = order.status,
+                    otime = order.otime,
+                    sumprice = order.sumprice,
+                    bookname = bookname
+                ))
+            }
+        }
+        val bills = billImpl.findByAttr(uid=uid)
+        if(bills.isNotEmpty()){
+            for (bill in bills){
+                val bookname = bookImpl.findByBookid(bill.bookid)!!.bookname
+                res.add(BillDetail(
+                    billid = bill.billid,
+                    uid = bill.uid,
+                    bookid = bill.bookid,
+                    amount = bill.amount,
+                    status = bill.status,
+                    otime = bill.otime,
+                    sumprice = bill.sumprice,
+                    bookname = bookname
+                ))
+            }
+        }
+        return res
     }
 
     /**
@@ -130,5 +172,39 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
     fun setOrders(orders: Orders) {
         ordersImpl.update(orders)
     }
+    fun insertOrdersByAttr(uid: String, bookid: Long, amount: Int = -1): String {
+        if(amount<=0) return "购买数量异常"  // 数量错误
+        val book = bookImpl.findByBookid(bookid) ?: return "书籍不存在" // 书籍不存在
+        if(book.stock < amount) return "书籍数量不足" // 数量不足
+        if(book.available == 0) return "书籍不可出售" // 书籍不可售
 
+        book.stock -= amount
+        bookImpl.update(book)
+        val sumprice = book.price.toLong()*amount
+        val time = getCurrentDateTime()
+        val order = Orders(billid=0,uid=uid,bookid=bookid,amount = amount,otime = time,sumprice = sumprice,status = "ongoing")
+        ordersImpl.insert(order)
+        deleteCart(uid=uid,bookid=bookid)
+        return "购买成功"
+    }
+    fun insertOneOrdersByAttr(uid: String, bookid: Long, amount: Int = -1): String {
+        if(amount<=0) return "购买数量异常"  // 数量错误
+        val book = bookImpl.findByBookid(bookid) ?: return "书籍不存在" // 书籍不存在
+        if(book.stock < amount) return "数据数量不住" // 数量不足
+        if(book.available == 0) return "书籍不可出售" // 书籍不可售
+
+        book.stock -= amount
+        bookImpl.update(book)
+        val sumprice = book.price.toLong()*amount
+        val time = getCurrentDateTime()
+        val order = Orders(billid=0,uid=uid,bookid=bookid,amount = amount,otime = time,sumprice = sumprice,status = "ongoing")
+        ordersImpl.insert(order)
+        return "购买成功"
+    }
+
+    fun getCurrentDateTime(): String {
+        val currentDateTime = LocalDateTime.now() // 获取当前时间
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss") // 定义格式
+        return currentDateTime.format(formatter) // 格式化时间
+    }
 }

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>小小书屋-个人订单</title>
+    <link href="/style/cart_page.css" rel="stylesheet">
+</head>
+<body>
+<header>
+    <nav>
+        <ul>
+            <li class="logo"><a href="/">小小书屋</a></li>
+            <li><a href="/page/classify">分类</a></li>
+            <li><a href="/page/bill">订单</a></li>
+            <li><a href="/page/cart">购物车</a></li>
+            <li class="account"><a href="#" th:text="'用户:'+${uid}"></a></li>
+            <li class="search">
+                <form action="/page/search" method="get">
+                    <input id="search-input" type="text" placeholder="搜索书籍..." name="info"/>
+                    <input id="search-button" type="submit" value="搜索"/>
+                </form>
+            </li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+    <section class="book-list">
+        <h2>购物车</h2>
+        <div th:if="${#lists.isEmpty(bills)}">
+            <p>该账号还没有购书记录</p>
+        </div>
+        <div class="book" th:each="bill : ${bills}">
+
+            <img class="book-image" th:src="@{/images/book/{bookname}.png(bookname=${bill.bookname})}" th:alt="${bill.bookname}">
+            <div class="profile">
+                <h5 th:text="${bill.bookname}">Book Title</h5>
+                <p th:text="'订单号：'+${bill.billid}">billid</p>
+            </div>
+            <div  class="money">
+                <p th:text="'数量：' + ${bill.amount}">amount</p>
+                <p class="sum-price" th:text="'总价：￥' + ${bill.sumprice/100} + '.' + ${bill.sumprice%100}">Sum Price</p>
+            </div>
+            <div class="money">
+                <p th:if="${bill.status == 'ongoing'}">处理中</p>
+                <p th:if="${bill.status == 'finish'}">已完成</p>
+                <p th:if="${bill.status == 'suspend'}">已中止</p>
+            </div>
+            <div>
+                <button class="suspend" th:if="${bill.status == 'ongoing'}" th:data-billid="${bill.billid}">取消订单</button>
+                <button class="finish" th:if="${bill.status == 'ongoing'}" th:data-billid="${bill.billid}">确认收货</button>
+            </div>
+        </div>
+
+    </section>
+</main>
+
+<footer>
+    <p>&copy; 2024 小小书屋 | 仅供学习测试使用</p>
+</footer>
+
+</body>
+</html>

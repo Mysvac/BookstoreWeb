@@ -18,8 +18,10 @@ class MainController(private val userService: UserService) {
         // 模板model
         val session = request.getSession(false) ?: return "redirect:/page/sign-in"
 
-
-        model.addAttribute("uid",session.getAttribute("uid"))
+        val uid: String = session.getAttribute("uid") as String
+        val grade: String = session.getAttribute("grade") as String
+        model.addAttribute("uid",uid)
+        model.addAttribute("grade",grade)
 
         val books: List<Book> = userService.findAllBook()
         model.addAttribute("books",books)

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>小小书屋-书籍详情</title>
+
+
+  <link href="/style/classify-page.css" rel="stylesheet">
+
+</head>
+<body>
+<header>
+  <nav>
+    <ul>
+      <li class="logo"><a href="/">小小书屋</a></li>
+      <li><a href="/page/classify">分类</a></li>
+      <li><a href="/page/bill">订单</a></li>
+      <li><a href="/page/cart">购物车</a></li>
+      <li class="account"><a href="#" th:text="'用户:'+${uid}"></a></li>
+      <li class="search">
+        <form action="/page/search" method="get">
+          <input id="search-input" type="text" placeholder="搜索书籍..." name="info"/>
+          <input id="search-button" type="submit" value="搜索"/>
+        </form>
+      </li>
+    </ul>
+  </nav>
+</header>
+
+
+
+<main>
+  <section class="book-list">
+    <h2>分类</h2>
+
+    <div class="category-item">
+      <div class="category-image">
+        <img src="/images/外国文学.png" alt="外国文学">
+      </div>
+      <div class="category-info">
+        <h3>外国文学</h3>
+        <p>外国文学包括世界各地的经典文学作品，涵盖多种语言和文化。</p>
+      </div>
+      <div class="category-button">
+        <a href="/page/search?info=外国文学"><button class="search">查看详情</button></a>
+      </div>
+    </div>
+
+    <div class="category-item">
+      <div class="category-image">
+        <img src="/images/古典文学.png" alt="古典文学">
+      </div>
+      <div class="category-info">
+        <h3>古典文学</h3>
+        <p>古典文学代表了人类文明的璀璨篇章，涵盖了多种古老的文学形式和思想。</p>
+      </div>
+      <div class="category-button">
+        <a href="/page/search?info=古典文学"><button class="search">查看详情</button></a>
+      </div>
+    </div>
+
+    <div class="category-item">
+      <div class="category-image">
+        <img src="/images/网络文学.png" alt="网络文学">
+      </div>
+      <div class="category-info">
+        <h3>网络文学</h3>
+        <p>网络文学兴起于互联网时代，吸引了大量年轻读者，涵盖了各类题材。</p>
+      </div>
+      <div class="category-button">
+        <a href="/page/search?info=网络文学"><button class="search">查看详情</button></a>
+      </div>
+    </div>
+
+    <div class="category-item">
+      <div class="category-image">
+        <img src="/images/轻小说.png" alt="轻小说">
+      </div>
+      <div class="category-info">
+        <h3>轻小说</h3>
+        <p>轻小说以其轻松有趣的故事和绘画风格吸引了大量粉丝，常常带有幻想元素。</p>
+      </div>
+      <div class="category-button">
+        <a href="/page/search?info=轻小说"><button class="search">查看详情</button></a>
+      </div>
+    </div>
+
+    <div class="category-item">
+      <div class="category-image">
+        <img src="/images/教育.png" alt="教育">
+      </div>
+      <div class="category-info">
+        <h3>教育科普</h3>
+        <p>教育类图书涵盖了教学方法、学习策略和教育理论等内容。</p>
+      </div>
+      <div class="category-button">
+        <a href="/page/search?info=教育"><button class="search">查看详情</button></a>
+      </div>
+    </div>
+
+  </section>
+</main>
+
+
+<footer>
+  <p>&copy; 2024 小小书屋 | 仅供学习测试使用</p>
+</footer>
+</body>
+</html>

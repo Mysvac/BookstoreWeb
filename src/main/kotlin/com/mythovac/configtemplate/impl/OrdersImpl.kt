@@ -25,7 +25,7 @@ class OrdersImpl(private val jdbcTemplate: JdbcTemplate) : OrdersDao {
     }
 
     override fun findByAttr(billid: Long, uid: String, bookid: Long): List<Orders> {
-        val sql = "SELECT * FROM orders WHERE uid = ? OR bookid = ? OR uid = ?"
+        val sql = "SELECT * FROM orders WHERE bookid = ? OR uid = ? OR bookid = ?"
         return jdbcTemplate.query(sql, rowMapper, billid, uid, bookid)
     }
 

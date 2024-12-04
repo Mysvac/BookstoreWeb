@@ -38,4 +38,38 @@ class DataController(private val userService: UserService){
         userService.insertCart(uid=uid, bookid = bookid, amount = amount)
         return "redirect:/page/cart"
     }
+
+    @PostMapping("/buy-one-book")
+    fun buyOneBook(request: HttpServletRequest):ResponseEntity<Map<String, String>?> {
+        val session = request.getSession(false)?:return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            .body(mapOf("message" to "用户未登录"))
+
+        val uid = session.getAttribute("uid") as String
+        val bookid = request.getParameter("bookid")?.toLong() ?:return ResponseEntity.badRequest()
+            .body(mapOf("message" to "书籍ID不能为空"))
+        val amount = request.getParameter("amount")?.toInt() ?:return ResponseEntity.badRequest()
+            .body(mapOf("message" to "购买数量不能为空"))
+
+        val msg: String = userService.insertOneOrdersByAttr(uid = uid,bookid=bookid, amount = amount)
+
+        if(msg == "购买成功") return ResponseEntity.ok(mapOf("message" to msg))
+        return ResponseEntity.badRequest().body(mapOf("message" to msg))
+    }
+
+    @PostMapping("/buy-book")
+    fun buyBook(request: HttpServletRequest):ResponseEntity<Map<String, String>?> {
+        val session = request.getSession(false)?:return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            .body(mapOf("message" to "用户未登录"))
+
+        val uid = session.getAttribute("uid") as String
+        val bookid = request.getParameter("bookid")?.toLong() ?:return ResponseEntity.badRequest()
+            .body(mapOf("message" to "书籍ID不能为空"))
+        val amount = request.getParameter("amount")?.toInt() ?:return ResponseEntity.badRequest()
+            .body(mapOf("message" to "购买数量不能为空"))
+
+        val msg: String = userService.insertOrdersByAttr(uid = uid,bookid=bookid, amount = amount)
+
+        if(msg == "购买成功") return ResponseEntity.ok(mapOf("message" to msg))
+        return ResponseEntity.badRequest().body(mapOf("message" to msg))
+    }
 }

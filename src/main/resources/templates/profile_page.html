@@ -2,9 +2,10 @@
 <html lang="zh" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>小小书屋-购物车</title>
-    <link href="/style/cart_page.css" rel="stylesheet">
-    <script src="/scripts/cart-page.js" defer></script>
+    <title>小小书屋-书籍详情</title>
+
+    <link href="/style/info_page.css" rel="stylesheet">
+
 </head>
 <body>
 <header>
@@ -27,26 +28,22 @@
 
 <main>
     <section class="book-list">
-        <h2>购物车</h2>
-        <div th:if="${#lists.isEmpty(cartbooks)}">
-            <p>未找到相关书籍</p>
-        </div>
-        <div class="book" th:each="book : ${cartbooks}">
+        <h2>详细信息</h2>
 
+        <div class="book-info">
             <img class="book-image" th:src="@{/images/book/{bookname}.png(bookname=${book.bookname})}" th:alt="${book.bookname}">
-            <div class="profile">
-                <h5 th:text="${book.bookname}">Book Title</h5>
+            <div class="book-details">
+                <h3 th:text="${book.bookname}">Book Title</h3> <!-- Book Title -->
+                <p th:text="'简介: ' + ${book.profile}">Book Profile</p>
                 <p th:text="'作者: ' + ${book.author}">Author Name</p>
-                <p th:text="'库存：'+${book.stock}"></p>
+                <p class="price" th:text="'售价: ￥' + ${book.price/100} + '.' + ${book.price%100}">Price</p>
+                <p th:text="'库存: ' + ${book.stock}">Stock</p>
+                <p th:text="'销售量: ' + ${book.sales}">Sales</p>
+                <div class="book-actions">
+                    <button class="buy" th:data-bookid="${book.bookid}">直接购买</button>
+                    <button class="insert-to-cart"  th:data-bookid="${book.bookid}">加入购物车</button>
+                </div>
             </div>
-            <div  class="money">
-                <p  class="single-price" th:text="'单价：￥' + ${book.price/100} + '.' + ${book.price%100}">Price</p>
-                <p>数量：<input type="number" class="booknum" th:value="${book.amount}"/></p>
-                <p class="sum-price" th:text="'总价：￥' + ${book.price*book.amount/100} + '.' + ${book.price*book.amount%100}">Sum Price</p>
-            </div>
-            <button class="update-num" th:data-bookid="${book.bookid}">更新数量</button>
-            <button class="delete" th:data-bookid="${book.bookid}">删除</button>
-            <button class="buy" th:data-bookid="${book.bookid}">购买</button>
         </div>
 
     </section>
@@ -55,6 +52,5 @@
 <footer>
     <p>&copy; 2024 小小书屋 | 仅供学习测试使用</p>
 </footer>
-
 </body>
 </html>

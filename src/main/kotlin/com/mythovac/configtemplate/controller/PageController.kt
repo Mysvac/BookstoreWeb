@@ -1,6 +1,8 @@
 package com.mythovac.configtemplate.controller
 
 
+import com.mythovac.configtemplate.entity.Bill
+import com.mythovac.configtemplate.entity.BillDetail
 import com.mythovac.configtemplate.entity.Book
 import com.mythovac.configtemplate.entity.Cartbook
 import com.mythovac.configtemplate.service.UserService
@@ -25,9 +27,14 @@ class PageController(private val userService: UserService) {
     fun main(request: HttpServletRequest, model: Model): String {
         // 模板model
         val session = request.getSession(false) ?: return "redirect:/page/sign-in"
-        model.addAttribute("uid",session.getAttribute("uid"))
+        val uid: String = session.getAttribute("uid") as String
+        val grade: String = session.getAttribute("grade") as String
+        model.addAttribute("uid",uid)
+        model.addAttribute("grade",grade)
+
         val books: List<Book> = userService.findAllBook()
         model.addAttribute("books",books)
+
         return "main_page.html"
     }
 
@@ -35,11 +42,16 @@ class PageController(private val userService: UserService) {
     fun search(request: HttpServletRequest, model: Model): String {
         // 模板model
         val session = request.getSession(false) ?: return "redirect:/page/sign-in"
-        model.addAttribute("uid",session.getAttribute("uid"))
+        val uid: String = session.getAttribute("uid") as String
+        val grade: String = session.getAttribute("grade") as String
+        model.addAttribute("uid",uid)
+        model.addAttribute("grade",grade)
+
         val info: String? = request.getParameter("info")
         if(info == null) return "redirect:/page/main"
         val books: List<Book> = userService.findBookByAttr(author = info, bookname = info, booktype = info)
         model.addAttribute("books",books)
+
         return "main_page.html"
     }
 
@@ -47,11 +59,16 @@ class PageController(private val userService: UserService) {
     fun info(request: HttpServletRequest, model: Model): String{
         // 模板model
         val session = request.getSession(false) ?: return "redirect:/page/sign-in"
-        model.addAttribute("uid",session.getAttribute("uid"))
-        val bookid: Long = request.getParameter("bookid")?.toLong() ?: return "redirect:/page/main"
+        val uid: String = session.getAttribute("uid") as String
+        val grade: String = session.getAttribute("grade") as String
+        model.addAttribute("uid",uid)
+        model.addAttribute("grade",grade)
 
+
+        val bookid: Long = request.getParameter("bookid")?.toLong() ?: return "redirect:/page/main"
         val book: Book = userService.findBookByAttr(bookid = bookid).firstOrNull() ?: return "redirect:/page/main"
         model.addAttribute("book",book)
+
         return "info_page.html"
     }
 
@@ -59,11 +76,45 @@ class PageController(private val userService: UserService) {
     fun cart(request: HttpServletRequest, model: Model): String{
         // 模板model
         val session = request.getSession(false) ?: return "redirect:/page/sign-in"
-        model.addAttribute("uid",session.getAttribute("uid"))
         val uid: String = session.getAttribute("uid") as String
-        val cartbooks: List<Cartbook> = userService.findCartbookByUid(uid)
+        val grade: String = session.getAttribute("grade") as String
+        model.addAttribute("uid",uid)
+        model.addAttribute("grade",grade)
 
+        val cartbooks: List<Cartbook> = userService.findCartbookByUid(uid)
         model.addAttribute("cartbooks",cartbooks)
+
         return "cart_page.html"
+    }
+
+    @GetMapping("/bill")
+    fun bill(request: HttpServletRequest, model: Model): String{
+        // 模板model
+        val session = request.getSession(false) ?: return "redirect:/page/sign-in"
+        val uid: String = session.getAttribute("uid") as String
+        val grade: String = session.getAttribute("grade") as String
+        model.addAttribute("uid",uid)
+        model.addAttribute("grade",grade)
+
+        val bills: List<BillDetail> = userService.findBillAndOrderByUid(uid)
+
+        if(bills.isEmpty()) println("bills is empty")
+        else println("bills is not empty")
+
+        model.addAttribute("bills",bills)
+
+        return "bill_page.html"
+    }
+
+    @GetMapping("/classify")
+    fun classifyPage(request: HttpServletRequest, model: Model): String{
+        // 模板model
+        val session = request.getSession(false) ?: return "redirect:/page/sign-in"
+        val uid: String = session.getAttribute("uid") as String
+        val grade: String = session.getAttribute("grade") as String
+        model.addAttribute("uid",uid)
+        model.addAttribute("grade",grade)
+
+        return "classify_page.html"
     }
 }

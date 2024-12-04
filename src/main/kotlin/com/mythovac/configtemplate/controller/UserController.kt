@@ -24,8 +24,14 @@ class UserController(private val userService: UserService) {
             return "sign_in.html"
         }
         if(userService.signIn(uid,password)) {
+            val grade: String = userService.findGradeByUid(uid)
+            if(grade != "admin" && grade != "vip"){
+                model.addAttribute("error","用户被封禁")
+                return "sign_in.html"
+            }
             val session = request.getSession(true)
             session.setAttribute("uid", uid)
+            session.setAttribute("grade",grade)
             return "redirect:/"
         }
         model.addAttribute("error", "用户名或密码错误")
