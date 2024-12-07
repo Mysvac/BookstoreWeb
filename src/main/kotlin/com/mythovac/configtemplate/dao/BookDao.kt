@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository
 @Repository
 interface BookDao {
     fun findAll(): List<Book>
+    fun findAllAble(): List<Book>
     fun findByBookid(bookid: Long): Book?
     fun findByAttr(bookid: Long = -1, author: String = "鎿", booktype: String = "鎿", bookname: String = "鎿") : List<Book>
     fun insert(book: Book)

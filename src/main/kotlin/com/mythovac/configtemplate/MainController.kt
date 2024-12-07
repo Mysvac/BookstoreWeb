@@ -25,7 +25,7 @@ class MainController(private val userService: UserService) {
             model.addAttribute("grade",grade)
         }
 
-        val books: List<Book> = userService.findAllBook()
+        val books: List<Book> = userService.findAllAbleBook()
         model.addAttribute("books",books)
         return "main_page.html"
     }

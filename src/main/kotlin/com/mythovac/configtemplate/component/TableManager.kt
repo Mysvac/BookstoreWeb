@@ -93,6 +93,8 @@ class TableManager(private val jdbcTemplate: JdbcTemplate, private val passwordE
         val adminPwd: String = passwordEncoder.encode("adminPwd")
         val insertAdminSQL = "INSERT INTO users (uid, password, grade) VALUES (?, ?, ?)"
         jdbcTemplate.update(insertAdminSQL, "admin", adminPwd,"admin")
+//        val insertAdminProfile = "INSERT INTO userProfile (uid, gender) VALUES (1, 'secrecy')"
+//        jdbcTemplate.update(insertAdminProfile)
     }
 
     private fun insertBook(){

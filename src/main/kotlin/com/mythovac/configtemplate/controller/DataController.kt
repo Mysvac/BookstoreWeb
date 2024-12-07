@@ -1,6 +1,7 @@
 package com.mythovac.configtemplate.controller
 
 
+import com.mythovac.configtemplate.entity.Book
 import com.mythovac.configtemplate.entity.Orders
 import com.mythovac.configtemplate.entity.UserProfile
 import com.mythovac.configtemplate.service.UserService
@@ -152,12 +153,13 @@ class DataController(private val userService: UserService){
 
 
         val uid: String = session.getAttribute("uid") as String
+        val grade: String = session.getAttribute("grade") as String
         val billidStr: String = request.getParameter("billid") ?: return ResponseEntity.badRequest().body(mapOf("message" to "billid为空"))
 
         val billid: Long = billidStr.toLong()
 
         val orders: Orders = userService.findOrderByBillid(billid) ?: return ResponseEntity.badRequest().body(mapOf("message" to "书籍信息错误"))
-        if(orders.uid != uid) return ResponseEntity.badRequest().body(mapOf("message" to "你没有权限修改别人的书"))
+        if(orders.uid != uid && grade !="admin") return ResponseEntity.badRequest().body(mapOf("message" to "你没有权限修改别人的书"))
         if(orders.status!="ongoing") return ResponseEntity.badRequest().body(mapOf("message" to "书籍已处理"))
 
         orders.status = "suspend"
@@ -174,12 +176,13 @@ class DataController(private val userService: UserService){
             .body(mapOf("message" to "用户未登录"))
 
         val uid: String = session.getAttribute("uid") as String
+        val grade: String = session.getAttribute("grade") as String
         val billidStr: String = request.getParameter("billid") ?: return ResponseEntity.badRequest().body(mapOf("message" to "书籍信息错误"))
 
         val billid: Long = billidStr.toLong()
 
         val orders: Orders = userService.findOrderByBillid(billid) ?: return ResponseEntity.badRequest().body(mapOf("message" to "书籍信息错误"))
-        if(orders.uid != uid) return ResponseEntity.badRequest().body(mapOf("message" to "你没有权限修改别人的书"))
+        if(orders.uid != uid && grade !="admin") return ResponseEntity.badRequest().body(mapOf("message" to "你没有权限修改别人的书"))
         if(orders.status!="ongoing") return ResponseEntity.badRequest().body(mapOf("message" to "书籍已处理"))
 
         orders.status = "finish"
@@ -213,4 +216,72 @@ class DataController(private val userService: UserService){
 
         return "redirect:/page/profile"
     }
+
+    /**
+     * 修改图书价格和库存
+     * */
+    @PostMapping("/book-update")
+    fun updateBook(request: HttpServletRequest):ResponseEntity<Map<String, String>?> {
+        val session = request.getSession(false)?:return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            .body(mapOf("message" to "用户未登录"))
+
+        val uid: String = session.getAttribute("uid") as String
+        val grade: String = session.getAttribute("grade") as String
+        if(grade!="admin") return ResponseEntity.badRequest().body(mapOf("message" to "你没有权限"))
+
+        val bookid: Long = request.getParameter("bookid").toLong()
+        val price: Int = request.getParameter("price").toInt()
+        val stock: Int = request.getParameter("stock").toInt()
+
+        val book: Book = userService.findBookByAttr(bookid=bookid).firstOrNull() ?: return ResponseEntity.badRequest().body(mapOf("message" to "图书不存在"))
+        book.stock=stock
+        book.price=price
+        userService.setBookInfo(book)
+
+        return ResponseEntity.ok(mapOf("message" to "处理成功"))
+    }
+
+    /**
+     * 修改图书状态图书
+     * */
+    @PostMapping("/book-able")
+    fun ableBook(request: HttpServletRequest):ResponseEntity<Map<String, String>?> {
+        val session = request.getSession(false)?:return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            .body(mapOf("message" to "用户未登录"))
+
+        val uid: String = session.getAttribute("uid") as String
+        val grade: String = session.getAttribute("grade") as String
+        if(grade!="admin") return ResponseEntity.badRequest().body(mapOf("message" to "你没有权限"))
+
+        val bookid: Long = request.getParameter("bookid").toLong()
+
+        val book: Book = userService.findBookByAttr(bookid=bookid).firstOrNull() ?: return ResponseEntity.badRequest().body(mapOf("message" to "图书不存在"))
+        book.available=1-book.available
+        userService.setBookInfo(book)
+
+        return ResponseEntity.ok(mapOf("message" to "处理成功"))
+    }
+
+    /**
+     * 修改图书状态图书
+     * */
+    @PostMapping("/book-delete")
+    fun deleteBook(request: HttpServletRequest):ResponseEntity<Map<String, String>?> {
+        val session = request.getSession(false)?:return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            .body(mapOf("message" to "用户未登录"))
+
+        val uid: String = session.getAttribute("uid") as String
+        val grade: String = session.getAttribute("grade") as String
+        if(grade!="admin") return ResponseEntity.badRequest().body(mapOf("message" to "你没有权限"))
+
+        val bookid: Long = request.getParameter("bookid").toLong()
+
+        val res: Boolean = userService.deleteBook(bookid)
+        return if(res){
+            ResponseEntity.ok(mapOf("message" to "处理成功"))
+        } else{
+            ResponseEntity.badRequest().body(mapOf("message" to "图书存在订单/账单，不能删除，只能停售"))
+        }
+    }
+
 }

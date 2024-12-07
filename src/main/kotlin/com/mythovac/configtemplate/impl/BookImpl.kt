@@ -29,6 +29,10 @@ class BookImpl(private val jdbcTemplate: JdbcTemplate) : BookDao {
         return jdbcTemplate.query(sql, rowMapper)
     }
 
+    override fun findAllAble(): List<Book> {
+        val sql = "SELECT * FROM book WHERE available = 1"
+        return jdbcTemplate.query(sql, rowMapper)
+    }
 
     override fun findByBookid(bookid: Long): Book? {
         val sql = "SELECT * FROM book WHERE bookid = ?"

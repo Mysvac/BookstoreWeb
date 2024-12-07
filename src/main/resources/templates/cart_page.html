@@ -55,7 +55,7 @@
             <button class="update-num" th:data-bookid="${book.bookid}">更新数量</button>
             <button class="delete" th:data-bookid="${book.bookid}">删除</button>
             <button class="buy" th:data-bookid="${book.bookid}" th:if="${book.available==1}">购买</button>
-            <button class="buy-unable" th:data-bookid="${book.bookid}" th:if="${book.available==0}">停售</button>
+            <button class="buy-unable" th:data-bookid="${book.bookid}" th:if="${book.available==0}" style="background: grey;color: red">停售！</button>
         </div>
 
     </section>

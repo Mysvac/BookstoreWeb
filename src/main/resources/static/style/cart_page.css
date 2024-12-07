@@ -249,5 +249,6 @@ footer {
 
 .buy-unable ,
 .buy-unable:hover{
-    background: #cccccc;
+    background: gray;
+    color: red;
 }

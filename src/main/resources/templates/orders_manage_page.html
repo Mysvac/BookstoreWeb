@@ -5,7 +5,7 @@
   <title>小小书屋-管理</title>
 
   <link href="/style/management_page.css" rel="stylesheet">
-
+  <script src="/scripts/orders_manage_page.js" defer></script>
 </head>
 <body>
 <header>
@@ -41,15 +41,10 @@
 
     <!-- 右侧内容区域 -->
     <div class="content">
-      <h3 th:text="'总金额：'+${sumMoney/100} + '.' + ${sumMoney%100} +
-      ' | 完成金额：' + ${finishMoney/100} + '.' + ${finishMoney%100} +
-      ' | 进行中：'+ ${goingMoney/100} + '.' + ${goingMoney%100} "></h3>
-
-      <div th:if="${#lists.isEmpty(bills)}">
+      <div th:if="${#lists.isEmpty(orders)}">
         <p>按无进行中的订单</p>
       </div>
-
-      <div class="bill" th:each="bill : ${bills}">
+      <div class="bill" th:each="bill : ${orders}">
         <div class="profile">
           <h5 th:text="'订单号：'+${bill.billid}">billid</h5>
           <p th:text="'书籍编号：'+${bill.bookid}">Book Title</p>
@@ -65,6 +60,10 @@
           <p th:if="${bill.status == 'ongoing'}">处理中</p>
           <p th:if="${bill.status == 'finish'}">已完成</p>
           <p th:if="${bill.status == 'suspend'}">已中止</p>
+        </div>
+        <div th:if="${bill.status == 'ongoing'}">
+          <button class="suspend-btn" th:if="${bill.status == 'ongoing'}" th:data-billid="${bill.billid}">取消订单</button>
+          <button class="finish-btn" th:if="${bill.status == 'ongoing'}" th:data-billid="${bill.billid}">确认收货</button>
         </div>
       </div>
 

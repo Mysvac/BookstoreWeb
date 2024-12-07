@@ -47,7 +47,8 @@
                     <h3 th:text="${book.bookname}">Book Title</h3>
                 </a>
                 <p th:text="'作者: ' + ${book.author}">Author Name</p>
-                <p class="price" th:text="'￥' + ${book.price/100} + '.' + ${book.price%100}">Price</p>
+                <p th:if="${book.available==0}" style="color: darkred">停售！</p>
+                <p th:if="${book.available==1}" class="price" th:text="'￥' + ${book.price/100} + '.' + ${book.price%100}">Price</p>
                 <button class="insert-to-cart" th:data-bookid="${book.bookid}">加入购物车</button>
             </div>
 

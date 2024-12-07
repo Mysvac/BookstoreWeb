@@ -21,6 +21,7 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
     private var ordersImpl: OrdersImpl = OrdersImpl(jdbcTemplate)
     private var billImpl: BillImpl = BillImpl(jdbcTemplate)
     private var cartbookImpl: CartbookImpl = CartbookImpl(jdbcTemplate)
+    private var userInfoImpl: UserInfoImpl = UserInfoImpl(jdbcTemplate)
 
     /**
      * 注册普通账号
@@ -29,7 +30,7 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
         if( usersImpl.findByUid(uid) == null ) {
             val newPassword = passwordEncoder.encode(password)
             usersImpl.insert(Users(uid = uid, password = newPassword, grade = "vip"))
-            userProfileImpl.insert(UserProfile(uid,"secrecy","","","",""))
+            userProfileImpl.insert(UserProfile(uid=uid,gender="secrecy",address="",   "","",""))
             return true
         }
         return false
@@ -42,6 +43,9 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
 
         return passwordEncoder.matches(password, res.password)
     }
+    /**
+     * 查询指定uid用户的权限
+     * */
     fun findGradeByUid(uid: String): String{
         val res: Users? = usersImpl.findByUid(uid)
         return res?.grade ?: "banned"
@@ -80,23 +84,48 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
         return usersImpl.findByUid(uid)
     }
     /**
-     * 查询图书，加入和删除
+     * 查询全部用户具体信息
+     * */
+    fun findAllUserInfos(): List<UserInfo> {
+        return userInfoImpl.findAllUserIndo()
+    }
+    /**
+     * 查询购物车数据 按照uid
      * */
     fun findCartbookByUid(uid: String): List<Cartbook> {
         return cartbookImpl.findCartbookByUid(uid)
     }
+    /**
+     * 查询全部图书
+     * */
     fun findAllBook(): List<Book> {
         return bookImpl.findAll()
     }
+
+    fun findAllAbleBook(): List<Book> {
+        return bookImpl.findAllAble ()
+    }
+    /**
+     * 根据特征查询图书
+     * */
     fun findBookByAttr(bookid: Long = -1, author: String = "鎿乸", booktype: String = "鎿乸", bookname: String = "鎿乸"): List<Book> {
         return bookImpl.findByAttr(bookid, author, booktype, bookname)
     }
+    /**
+     * 新增图书
+     * */
     fun insertBook(book: Book) {
         bookImpl.insert(book)
     }
+    /**
+     * 设置图书信息
+     * */
     fun setBookInfo(book: Book) {
         bookImpl.update(book)
     }
+    /**
+     * 查询指定用户的订单和账单
+     * */
     fun findBillAndOrderByUid(uid : String): List<BillDetail>{
         val res: MutableList<BillDetail> = mutableListOf()
         val orders = ordersImpl.findByAttr(uid=uid)
@@ -133,10 +162,39 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
         }
         return res
     }
+
+    /**
+     * 查询指定的订单，根据订单号billid
+     * */
     fun findOrderByBillid(billid: Long): Orders?{
         return ordersImpl.findByAttr(billid = billid).firstOrNull()
     }
-
+    /**
+     * 查询全部的订单
+     * */
+    fun findAllOrders(): List<BillDetail>{
+        val res: MutableList<BillDetail> = mutableListOf()
+        val orders = ordersImpl.findAll()
+        if(orders.isNotEmpty()){
+            for(order in orders){
+                val bookname = bookImpl.findByBookid(order.bookid)!!.bookname
+                res.add(BillDetail(
+                    billid = order.billid,
+                    uid = order.uid,
+                    bookid = order.bookid,
+                    amount = order.amount,
+                    status = order.status,
+                    otime = order.otime,
+                    sumprice = order.sumprice,
+                    bookname = bookname
+                ))
+            }
+        }
+        return res
+    }
+    /**
+     * 查询全部的订单和账单
+     * */
     fun findAllOrdersAndBill(): List<BillDetail>{
         ordersImpl.clearStatus()
         val res: MutableList<BillDetail> = mutableListOf()
@@ -176,7 +234,7 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
     }
 
     /**
-     * 删除相关
+     * 删除图书
      * */
     fun deleteBook(bookid: Long): Boolean {
         // 有订单，不能删除
@@ -186,6 +244,9 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
         bookImpl.deleteByBookid(bookid)
         return true
     }
+    /**
+     * 删除用户
+     * */
     fun deleteUsers(uid: String): Boolean {
         // 存在订单，不能删除
         if(billImpl.findByAttr(uid = uid).isNotEmpty() || ordersImpl.findByAttr(uid = uid).isNotEmpty()) {
@@ -194,10 +255,16 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
         usersImpl.deleteByUid(uid)
         return true
     }
+    /**
+     * 删除单条购物车数据
+     * */
     fun deleteCart(uid: String,bookid: Long): Boolean {
         cartImpl.deleteByUidAndBookid(uid,bookid)
         return true
     }
+    /**
+     * 删除指定用户的全部购物车数据
+     * */
     fun deleteCartByUid(uid: String): Boolean {
         cartImpl.deleteByUid(uid)
         return true
@@ -222,13 +289,22 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
             cartImpl.update(Cart(uid = uid, bookid = bookid, amount = amount))
         }
     }
-
+    /**
+     * 修改订单数据
+     * */
     fun setOrders(orders: Orders) {
         ordersImpl.update(orders)
     }
+    /**
+     * 删除指定订单
+     * */
     fun deleteOrdersByBillid(billid: Long) {
         ordersImpl.deleteByBillid(billid)
     }
+    /**
+     * 插入一天新订单，同时减少库存数量
+     * 去除购物车中同类项目
+     * */
     fun insertOrdersByAttr(uid: String, bookid: Long, amount: Int = -1): String {
         if(amount<=0) return "购买数量异常"  // 数量错误
         val book = bookImpl.findByBookid(bookid) ?: return "书籍不存在" // 书籍不存在
@@ -244,6 +320,10 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
         deleteCart(uid=uid,bookid=bookid)
         return "购买成功"
     }
+    /**
+     * 插入一天新订单，同时减少库存数量
+     * 不修改购物车
+     * */
     fun insertOneOrdersByAttr(uid: String, bookid: Long, amount: Int = -1): String {
         if(amount<=0) return "购买数量异常"  // 数量错误
         val book = bookImpl.findByBookid(bookid) ?: return "书籍不存在" // 书籍不存在
