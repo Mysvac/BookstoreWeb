@@ -71,6 +71,7 @@
 <section class="form-section" id="form-section">
     <h2>修改个人信息</h2>
     <form id="user-info-form" action="/data/change-userinfo" method="post">
+        <input type="hidden" name="uid" th:value="${userInfo.uid}">
         <label for="username">用户名:</label>
         <input type="text" id="username" name="username" th:value="${userInfo != null && userInfo.username!='' ? userInfo.username : 'Username is null'}">
 

@@ -69,3 +69,27 @@ deleteButtons.forEach(button => {
             });
     });
 });
+
+/**
+ * 删除用户
+ * */
+const profileButtons = document.querySelectorAll('.update-profile');
+
+profileButtons.forEach(button => {
+    button.addEventListener('click', function() {
+        // 获取当前人的uid
+        const uid = this.getAttribute('data-uid');
+
+
+        fetch(`/page/user-profile?uid=${uid}`, {
+            method: 'GET'
+        })
+            .then(response => {
+                window.location.href = response.url;  // 使用 response.url 获取重定向目标
+            })
+            .catch(error => {
+                console.error('提交失败:', error);
+                alert('提交失败，请重试');
+            });
+    });
+});

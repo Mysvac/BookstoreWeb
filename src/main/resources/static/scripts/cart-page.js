@@ -29,7 +29,7 @@ updateButtons.forEach(button => {
         })
             .then(response => {
                 if(response.ok){
-                    window.location.href = '/page/cart';
+                    window.location.reload();
                 }else {
                     console.log("请求失败");
                 }
@@ -63,7 +63,7 @@ deleteButtons.forEach(button => {
         })
             .then(response => {
                 if(response.ok){
-                    window.location.href = '/page/cart';
+                    window.location.reload();
                 }else {
                     console.log("请求失败");
                 }
@@ -108,7 +108,7 @@ buyButtons.forEach(button => {
             .then(response => response.json())
             .then(data => {
                 alert(data.message);  // 这里的 data.message 是从服务器返回的提示信息
-                window.location.href = '/page/cart';
+                window.location.reload();
             })
             .catch(error => {
                 console.log("error:"+error);
@@ -131,7 +131,7 @@ document.getElementById("del-all").addEventListener('click',function(){
         .then(response => response.json())
         .then(data => {
             alert(data.message);  // 这里的 data.message 是从服务器返回的提示信息
-            window.location.href = '/page/cart';
+            window.location.reload();
         })
         .catch(error => {
             console.log("error:"+error);
@@ -152,7 +152,7 @@ document.getElementById("buy-all").addEventListener('click',function(){
         .then(response => response.json())
         .then(data => {
             alert(data.message);  // 这里的 data.message 是从服务器返回的提示信息
-            window.location.href = '/page/cart';
+            window.location.reload();
         })
         .catch(error => {
             console.log("error:"+error);
@@ -173,7 +173,7 @@ document.getElementById("del-un").addEventListener('click',function(){
         .then(response => response.json())
         .then(data => {
             alert(data.message);  // 这里的 data.message 是从服务器返回的提示信息
-            window.location.href = '/page/cart';
+            window.location.reload();
         })
         .catch(error => {
             console.log("error:"+error);

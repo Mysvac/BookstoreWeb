@@ -321,23 +321,31 @@ class DataController(private val userService: UserService) {
         val session =
             request.getSession(false) ?: return "redirect:/page/sign-in"
 
-        // 获取uid
+        // 查看权限
         val uid = session.getAttribute("uid") as String
+        val grade: String = session.getAttribute("grade") as String
+
 
         // 获取提交的个人数据
+        val goalUid = request.getParameter("uid") as String
+
+        if(goalUid != uid && grade!="admin") {
+            return "redirect:/page/user-profile?uid=$goalUid"
+        }
+
         val username = request.getParameter("username")?.take(23)
-            ?: return "redirect:/page/profile"
+            ?: return "redirect:/page/user-profile?uid=$goalUid"
         val email = request.getParameter("email")?.take(45) ?: ""
         val address = request.getParameter("address")?.take(45) ?: ""
         val gender = request.getParameter("gender") ?: "secrecy"
         if (gender != "male" && gender != "female" && gender != "secrecy") {
-            return "redirect:/page/profile"
+            return "redirect:/page/user-profile?uid=$goalUid"
         }
         val profile = request.getParameter("profile")?.take(47) ?: ""
 
         // 数据放入实体类中
         val userProfile = UserProfile(
-            uid = uid,
+            uid = goalUid,
             username = username,
             email = email,
             address = address,
@@ -347,7 +355,7 @@ class DataController(private val userService: UserService) {
         // 数据库修改
         userService.setUserProfile(userProfile)
 
-        return "redirect:/page/profile"
+        return "redirect:/page/user-profile?uid=$goalUid"
     }
 
     /**
@@ -362,7 +370,7 @@ class DataController(private val userService: UserService) {
             .body(mapOf("message" to "用户未登录"))
 
         // 获取用户和权限，要求admin权限
-        val uid: String = session.getAttribute("uid") as String
+//        val uid: String = session.getAttribute("uid") as String
         val grade: String = session.getAttribute("grade") as String
         if (grade != "admin") return ResponseEntity.badRequest()
             .body(mapOf("message" to "你没有权限"))
@@ -396,7 +404,7 @@ class DataController(private val userService: UserService) {
             .body(mapOf("message" to "用户未登录"))
 
         // 获取用户和权限，要求admin权限
-        val uid: String = session.getAttribute("uid") as String
+//        val uid: String = session.getAttribute("uid") as String
         val grade: String = session.getAttribute("grade") as String
         if (grade != "admin") return ResponseEntity.badRequest()
             .body(mapOf("message" to "你没有权限"))
@@ -427,7 +435,7 @@ class DataController(private val userService: UserService) {
             .body(mapOf("message" to "用户未登录"))
 
         // 获取用户和权限，要求admin权限
-        val uid: String = session.getAttribute("uid") as String
+//        val uid: String = session.getAttribute("uid") as String
         val grade: String = session.getAttribute("grade") as String
         if (grade != "admin") return ResponseEntity.badRequest()
             .body(mapOf("message" to "你没有权限"))

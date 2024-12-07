@@ -195,6 +195,27 @@ class PageController(private val userService: UserService) {
         return "profile_page.html"
     }
 
+    /**
+     * 管理员界面
+     * 修改和查看他人的个人信息
+     * */
+    @GetMapping("/user-profile")
+    fun userProfilePage(request: HttpServletRequest, model: Model): String{
+        // 验证权限
+        val session = request.getSession(false) ?: return "redirect:/page/sign-in"
+        val uid: String = session.getAttribute("uid") as String
+        val grade: String = session.getAttribute("grade") as String
+        if(grade!="admin"){ return "redirect:/" }
+        model.addAttribute("uid",uid)
+        model.addAttribute("grade",grade)
+
+        // 获取目标个人信息界面
+        val goal: String = request.getParameter("uid")
+        val userInfo = userService.findUserInfoByUid(goal)
+        model.addAttribute("userInfo",userInfo)
+
+        return "profile_page.html"
+    }
 
     /**
      * 管理员管理面板
