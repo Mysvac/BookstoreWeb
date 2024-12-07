@@ -1,5 +1,10 @@
 package com.mythovac.configtemplate.entity
 
+/**
+ * Entity 实体类
+ * Book 书籍信息
+ * 对应数据表 book
+ * */
 data class Book(
     var bookid: Long,
     var bookname: String,

@@ -13,7 +13,10 @@ import java.io.IOException
 
 
 /**
+ * 程序启动监听
  * 创建表格，保证表格存在
+ * 默认在程序启动时创建表格（如果不存在）
+ * 根据参数，设置程序结束时，是否删除表格
  * */
 @Component
 class TableManager(private val jdbcTemplate: JdbcTemplate, private val passwordEncoder: PasswordEncoder) : CommandLineRunner {
@@ -30,6 +33,7 @@ class TableManager(private val jdbcTemplate: JdbcTemplate, private val passwordE
      * 程序启动时，如果表不存在，自动创建
      * */
     override fun run(vararg args: String?) {
+        // 创建数据表
         createTableUser()
         createTableUserProfile()
         createTableBook()
@@ -37,8 +41,11 @@ class TableManager(private val jdbcTemplate: JdbcTemplate, private val passwordE
         createTableOperation()
         createTableBill()
         createTriggerTrgBill()
-        insertAdmin()
+        // 获取数据信息，从excel表格中
         insertBook()
+        // 插入管理员的数据
+        insertAdmin()
+        insertAdminProfile()
     }
 
     /**
@@ -93,10 +100,14 @@ class TableManager(private val jdbcTemplate: JdbcTemplate, private val passwordE
         val adminPwd: String = passwordEncoder.encode("adminPwd")
         val insertAdminSQL = "INSERT INTO users (uid, password, grade) VALUES (?, ?, ?)"
         jdbcTemplate.update(insertAdminSQL, "admin", adminPwd,"admin")
-//        val insertAdminProfile = "INSERT INTO userProfile (uid, gender) VALUES (1, 'secrecy')"
-//        jdbcTemplate.update(insertAdminProfile)
+    }
+    // 管理员账号的个性化数据
+    private fun insertAdminProfile(){
+        val insertAdminProfileSQL = "INSERT INTO userProfile (uid, gender) VALUES ('admin', 'secrecy')"
+        jdbcTemplate.update(insertAdminProfileSQL)
     }
 
+    // 插入书籍信息
     private fun insertBook(){
         val insertBookSQL = "INSERT INTO book (bookname, booktype, stock, price, sales, author, profile, available) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
         val csvFile: String = "src/main/resources/static/books.csv"
@@ -235,6 +246,9 @@ class TableManager(private val jdbcTemplate: JdbcTemplate, private val passwordE
         END;
     """
 
+    /**
+     * 删除表的语句
+     * */
     private val dropTableUserSQL = "DROP TABLE IF EXISTS users;"
 
     private val dropTableUserProfileSQL = "DROP TABLE IF EXISTS userProfile;"

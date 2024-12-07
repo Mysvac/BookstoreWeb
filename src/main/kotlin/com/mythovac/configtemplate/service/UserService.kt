@@ -10,7 +10,9 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 /**
- * 数据库操作的服务层
+ * 服务层
+ * 数据库操作的二次封装
+ * 实现了控制层需要的方法
  * */
 @Service
 class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEncoder: PasswordEncoder) {
@@ -28,6 +30,7 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
      * */
     fun signUp(uid: String, password: String): Boolean {
         if( usersImpl.findByUid(uid) == null ) {
+            // 密码加密存储
             val newPassword = passwordEncoder.encode(password)
             usersImpl.insert(Users(uid = uid, password = newPassword, grade = "vip"))
             userProfileImpl.insert(UserProfile(uid=uid,gender="secrecy",address="",   "","",""))
@@ -35,14 +38,17 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
         }
         return false
     }
+
     /**
-     * 登入
+     * 登入 不存在就注册，存在就密码验证
      * */
     fun signIn(uid: String, password: String): Boolean {
         val res: Users = usersImpl.findByUid(uid) ?: return signUp(uid, password)
 
+        // 因为数据库内的密码加密了，所以要使用编码器，验证密码
         return passwordEncoder.matches(password, res.password)
     }
+
     /**
      * 查询指定uid用户的权限
      * */
@@ -50,6 +56,7 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
         val res: Users? = usersImpl.findByUid(uid)
         return res?.grade ?: "banned"
     }
+
     /**
      * 设置用户权限
      * */
@@ -59,8 +66,9 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
         usersImpl.update(Users(uid = uid, password = res.password, grade = grade))
         return true
     }
+
     /**
-     * 查询用户
+     * 查询用户详情信息
      * */
     fun findUserInfoByUid(uid: String): UserInfo? {
         val user: Users = usersImpl.findByUid(uid) ?: return null
@@ -77,24 +85,29 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
         )
         return userInfo
     }
-    fun findAllUsers(): List<Users> {
-        return usersImpl.findAll()
-    }
+
+    /**
+     * 根据uid
+     * 查询用户的 账号 密码 权限 信息
+     * */
     fun findUsersByUid(uid: String): Users? {
         return usersImpl.findByUid(uid)
     }
+
     /**
      * 查询全部用户具体信息
      * */
     fun findAllUserInfos(): List<UserInfo> {
         return userInfoImpl.findAllUserIndo()
     }
+
     /**
      * 查询购物车数据 按照uid
      * */
     fun findCartbookByUid(uid: String): List<Cartbook> {
         return cartbookImpl.findCartbookByUid(uid)
     }
+
     /**
      * 查询全部图书
      * */
@@ -102,27 +115,27 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
         return bookImpl.findAll()
     }
 
+    /**
+     * 查询全部正在售卖的图书信息
+     * */
     fun findAllAbleBook(): List<Book> {
         return bookImpl.findAllAble ()
     }
+
     /**
      * 根据特征查询图书
      * */
     fun findBookByAttr(bookid: Long = -1, author: String = "鎿乸", booktype: String = "鎿乸", bookname: String = "鎿乸"): List<Book> {
         return bookImpl.findByAttr(bookid, author, booktype, bookname)
     }
+
     /**
-     * 新增图书
-     * */
-    fun insertBook(book: Book) {
-        bookImpl.insert(book)
-    }
-    /**
-     * 设置图书信息
+     * 设置(修改)图书信息
      * */
     fun setBookInfo(book: Book) {
         bookImpl.update(book)
     }
+
     /**
      * 查询指定用户的订单和账单
      * */
@@ -169,6 +182,7 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
     fun findOrderByBillid(billid: Long): Orders?{
         return ordersImpl.findByAttr(billid = billid).firstOrNull()
     }
+
     /**
      * 查询全部的订单
      * */
@@ -192,6 +206,7 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
         }
         return res
     }
+
     /**
      * 查询全部的订单和账单
      * */
@@ -244,6 +259,7 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
         bookImpl.deleteByBookid(bookid)
         return true
     }
+
     /**
      * 删除用户
      * */
@@ -255,6 +271,7 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
         usersImpl.deleteByUid(uid)
         return true
     }
+
     /**
      * 删除单条购物车数据
      * */
@@ -262,6 +279,7 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
         cartImpl.deleteByUidAndBookid(uid,bookid)
         return true
     }
+
     /**
      * 删除指定用户的全部购物车数据
      * */
@@ -271,7 +289,7 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
     }
 
     /**
-     * 加入购物车，下单
+     * 加入购物车
      * */
     fun insertCart(uid: String, bookid: Long, amount: Int = -1) {
         val cart: Cart? = cartImpl.findByUidAndBookid(uid,bookid)
@@ -289,21 +307,17 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
             cartImpl.update(Cart(uid = uid, bookid = bookid, amount = amount))
         }
     }
+
     /**
      * 修改订单数据
      * */
     fun setOrders(orders: Orders) {
         ordersImpl.update(orders)
     }
+
     /**
-     * 删除指定订单
-     * */
-    fun deleteOrdersByBillid(billid: Long) {
-        ordersImpl.deleteByBillid(billid)
-    }
-    /**
-     * 插入一天新订单，同时减少库存数量
-     * 去除购物车中同类项目
+     * 插入一个新订单，同时减少库存数量
+     * 去除购物车中同类项目（通过购物车购买时）
      * */
     fun insertOrdersByAttr(uid: String, bookid: Long, amount: Int = -1): String {
         if(amount<=0) return "购买数量异常"  // 数量错误
@@ -320,9 +334,10 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
         deleteCart(uid=uid,bookid=bookid)
         return "购买成功"
     }
+
     /**
-     * 插入一天新订单，同时减少库存数量
-     * 不修改购物车
+     * 插入一个新订单，同时减少库存数量
+     * 不修改购物车（直接下单，未通过购物车购买）
      * */
     fun insertOneOrdersByAttr(uid: String, bookid: Long, amount: Int = -1): String {
         if(amount<=0) return "购买数量异常"  // 数量错误

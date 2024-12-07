@@ -3,6 +3,10 @@ package com.mythovac.configtemplate.dao
 import com.mythovac.configtemplate.entity.Cart
 import org.springframework.stereotype.Repository
 
+/**
+ * Dao 类
+ * 仅接口
+ * */
 @Repository
 interface CartDao {
     fun insert(cart: Cart)

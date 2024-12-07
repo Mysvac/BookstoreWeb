@@ -3,6 +3,10 @@ package com.mythovac.configtemplate.dao
 import com.mythovac.configtemplate.entity.Bill
 import org.springframework.stereotype.Repository
 
+/**
+ * Dao 类
+ * 仅接口
+ * */
 @Repository
 interface BillDao {
     fun findAll(): List<Bill>

@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <title>小小书屋-登入</title>
     <link href="/style/sign_in.css" rel="stylesheet">
+    <script src="/scripts/sign_in.js" defer></script>
 </head>
+
 <body>
 
     <div class="login-container">
@@ -26,7 +28,7 @@
             </div>
 
             <div class="submit-group">
-                <button type="submit">提交</button>
+                <button id="submit" type="submit">提交</button>
             </div>
             <div th:text="${error}" class="error_message"></div>
         </form>

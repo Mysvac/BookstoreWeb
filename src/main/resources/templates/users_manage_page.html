@@ -5,7 +5,7 @@
     <title>小小书屋-管理</title>
 
     <link href="/style/users_manage_page.css" rel="stylesheet">
-    <script src="/scripts/orders_manage_page.js" defer></script>
+    <script src="/scripts/users_manage_page.js" defer></script>
 </head>
 <body>
 <header>
@@ -15,7 +15,7 @@
             <li><a href="/page/classify">分类</a></li>
             <li><a href="/page/bill">订单</a></li>
             <li><a href="/page/cart">购物车</a></li>
-            <li class="account"><a href="/page/profile" th:text="${uid == null ? '游客' : uid }"></a></li>
+            <li class="account"><a href="/page/profile" th:text="${uid == null ? '登录' : uid }"></a></li>
             <li class="search">
                 <form action="/page/search" method="get">
                     <input id="search-input" type="text" placeholder="搜索书籍..." name="info"/>
@@ -54,7 +54,7 @@
                 <div  class="grade-form">
                     <p th:text="'当前权限：'+${userInfo.grade}">power</p>
                     <div>
-                        <select id="grade" name="grade">
+                        <select class="grade-select" name="grade-select">
                             <option value="vip" th:selected="${userInfo.grade == 'vip'}">普通用户-vip</option>
                             <option value="admin" th:selected="${userInfo.grade == 'admin'}">管理员-admin</option>
                             <option value="banned" th:selected="${userInfo.grade == 'banned'}">封禁-banned</option>
@@ -62,9 +62,9 @@
                     </div>
 
                 </div>
-                <button class="update-grade"  th:data-uid="${userInfo.uid}" >修改</button>
+                <button class="update-grade"  th:data-uid="${userInfo.uid}" >修改权限</button>
                 <button class="delete-user"  th:data-uid="${userInfo.uid}" >删除</button>
-                <button class="update-profile" th:data-uid="${userInfo.uid}">销售中</button>
+                <button class="update-profile" th:data-uid="${userInfo.uid}">修改简介</button>
 
             </div>
 

@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.GetMapping
 
 
 /**
- * Controller，实现了网站根目录的网页
+ * 控制层
+ * 网站根目录映射
+ * 等同于 /page/main
  * */
 @Controller("main-controller")
 class MainController(private val userService: UserService) {

@@ -3,6 +3,10 @@ package com.mythovac.configtemplate.dao
 import com.mythovac.configtemplate.entity.Book
 import org.springframework.stereotype.Repository
 
+/**
+ * Dao 类
+ * 仅接口
+ * */
 @Repository
 interface BookDao {
     fun findAll(): List<Book>

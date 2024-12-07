@@ -16,7 +16,7 @@
             <li><a href="/page/classify">分类</a></li>
             <li><a href="/page/bill">订单</a></li>
             <li><a href="/page/cart">购物车</a></li>
-            <li class="account"><a href="/page/profile" th:text="${uid == null ? '游客' : uid }"></a></li>
+            <li class="account"><a href="/page/profile" th:text="${uid == null ? '登录' : uid }"></a></li>
             <li class="search">
                 <form action="/page/search" method="get">
                     <input id="search-input" type="text" placeholder="搜索书籍..." name="info"/>

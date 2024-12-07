@@ -6,23 +6,28 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.RowMapper
 import org.springframework.stereotype.Repository
 
+/**
+ * Dao 类 的实现
+ * 通过SQL语句和Entity
+ * 直接实现数据库操作
+ * */
 @Repository
 class UserInfoImpl(private val jdbcTemplate: JdbcTemplate) {
-    private val usersImpl = UsersImpl(jdbcTemplate)
-    private val userProfileImpl  = UserProfileImpl(jdbcTemplate)
 
+    // 映射，方便查询的结果存入List<Entity>
     private val rowMapper = RowMapper<UserInfo> { rs, _ ->
         UserInfo(
             uid = rs.getString("uid"),
             grade = rs.getString("grade"),
             gender = rs.getString("gender"),
-            address = rs.getString("address"),
-            username = rs.getString("username"),
-            email = rs.getString("email"),
-            profile = rs.getString("profile")
+            address = rs.getString("address")?:"无",
+            username = rs.getString("username")?:"无",
+            email = rs.getString("email")?:"无",
+            profile = rs.getString("profile")?:"无"
         )
     }
 
+    // 查询所以用户的详细信息
     fun findAllUserIndo(): List<UserInfo> {
         val sql = """
             SELECT 
