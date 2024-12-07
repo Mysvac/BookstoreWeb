@@ -19,17 +19,25 @@ class OrdersImpl(private val jdbcTemplate: JdbcTemplate) : OrdersDao {
             sumprice = rs.getLong("sumprice"),
         )
     }
+
     override fun findAll(): List<Orders>{
-        val sql = "SELECT * FROM orders"
+        val sql = "SELECT * FROM orders WHERE status = 'ongoing'"
         return jdbcTemplate.query(sql, rowMapper)
     }
 
+    override fun clearStatus() {
+        val sql = "DELETE FROM orders WHERE status != 'ongoing'"
+        jdbcTemplate.update(sql)
+    }
+
     override fun findByAttr(billid: Long, uid: String, bookid: Long): List<Orders> {
-        val sql = "SELECT * FROM orders WHERE bookid = ? OR uid = ? OR bookid = ?"
+        val sql = "SELECT * FROM orders WHERE ((billid = ? OR uid = ? OR bookid = ?) AND status = 'ongoing')"
         return jdbcTemplate.query(sql, rowMapper, billid, uid, bookid)
     }
 
     override fun update(orders: Orders) {
+        val sql = "UPDATE orders SET status = ? WHERE billid = ?"
+        jdbcTemplate.update(sql,orders.status,orders.billid)
     }
     override fun insert(order: Orders) {
         val sql = "INSERT INTO orders (uid, bookid, amount, status,otime,sumprice) VALUES (?, ?, ?, ?, ?, ?)"
@@ -40,4 +48,6 @@ class OrdersImpl(private val jdbcTemplate: JdbcTemplate) : OrdersDao {
         val sql = "DELETE FROM orders WHERE billid = ?"
         jdbcTemplate.update(sql,billid)
     }
+
+
 }

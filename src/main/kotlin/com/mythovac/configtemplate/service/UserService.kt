@@ -58,6 +58,21 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
     /**
      * 查询用户
      * */
+    fun findUserInfoByUid(uid: String): UserInfo? {
+        val user: Users = usersImpl.findByUid(uid) ?: return null
+        val profile: UserProfile = userProfileImpl.findByUid(uid) ?: return null
+
+        val userInfo = UserInfo(
+            uid=uid,
+            grade=user.grade,
+            gender = profile.gender,
+            address = profile.address,
+            username = profile.username,
+            email = profile.email,
+            profile = profile.profile
+        )
+        return userInfo
+    }
     fun findAllUsers(): List<Users> {
         return usersImpl.findAll()
     }
@@ -101,6 +116,47 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
             }
         }
         val bills = billImpl.findByAttr(uid=uid)
+        if(bills.isNotEmpty()){
+            for (bill in bills){
+                val bookname = bookImpl.findByBookid(bill.bookid)!!.bookname
+                res.add(BillDetail(
+                    billid = bill.billid,
+                    uid = bill.uid,
+                    bookid = bill.bookid,
+                    amount = bill.amount,
+                    status = bill.status,
+                    otime = bill.otime,
+                    sumprice = bill.sumprice,
+                    bookname = bookname
+                ))
+            }
+        }
+        return res
+    }
+    fun findOrderByBillid(billid: Long): Orders?{
+        return ordersImpl.findByAttr(billid = billid).firstOrNull()
+    }
+
+    fun findAllOrdersAndBill(): List<BillDetail>{
+        ordersImpl.clearStatus()
+        val res: MutableList<BillDetail> = mutableListOf()
+        val orders = ordersImpl.findAll()
+        if(orders.isNotEmpty()){
+            for(order in orders){
+                val bookname = bookImpl.findByBookid(order.bookid)!!.bookname
+                res.add(BillDetail(
+                    billid = order.billid,
+                    uid = order.uid,
+                    bookid = order.bookid,
+                    amount = order.amount,
+                    status = order.status,
+                    otime = order.otime,
+                    sumprice = order.sumprice,
+                    bookname = bookname
+                ))
+            }
+        }
+        val bills = billImpl.findAll()
         if(bills.isNotEmpty()){
             for (bill in bills){
                 val bookname = bookImpl.findByBookid(bill.bookid)!!.bookname
@@ -166,11 +222,12 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
             cartImpl.update(Cart(uid = uid, bookid = bookid, amount = amount))
         }
     }
-    fun insertOrders(orders: Orders) {
-        ordersImpl.insert(orders)
-    }
+
     fun setOrders(orders: Orders) {
         ordersImpl.update(orders)
+    }
+    fun deleteOrdersByBillid(billid: Long) {
+        ordersImpl.deleteByBillid(billid)
     }
     fun insertOrdersByAttr(uid: String, bookid: Long, amount: Int = -1): String {
         if(amount<=0) return "购买数量异常"  // 数量错误
@@ -202,6 +259,16 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
         return "购买成功"
     }
 
+    /**
+     * 修改用户数据
+     * */
+    fun setUserProfile(userProfile: UserProfile){
+        userProfileImpl.update(userProfile)
+    }
+
+    /**
+     * 获取时间信息
+     * */
     fun getCurrentDateTime(): String {
         val currentDateTime = LocalDateTime.now() // 获取当前时间
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss") // 定义格式

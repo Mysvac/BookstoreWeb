@@ -26,11 +26,13 @@ class PageController(private val userService: UserService) {
     @GetMapping("/main")
     fun main(request: HttpServletRequest, model: Model): String {
         // 模板model
-        val session = request.getSession(false) ?: return "redirect:/page/sign-in"
-        val uid: String = session.getAttribute("uid") as String
-        val grade: String = session.getAttribute("grade") as String
-        model.addAttribute("uid",uid)
-        model.addAttribute("grade",grade)
+        val session = request.getSession(false)
+        if(session != null) {
+            val uid: String = session.getAttribute("uid") as String
+            val grade: String = session.getAttribute("grade") as String
+            model.addAttribute("uid",uid)
+            model.addAttribute("grade",grade)
+        }
 
         val books: List<Book> = userService.findAllBook()
         model.addAttribute("books",books)
@@ -41,12 +43,13 @@ class PageController(private val userService: UserService) {
     @GetMapping("/search")
     fun search(request: HttpServletRequest, model: Model): String {
         // 模板model
-        val session = request.getSession(false) ?: return "redirect:/page/sign-in"
-        val uid: String = session.getAttribute("uid") as String
-        val grade: String = session.getAttribute("grade") as String
-        model.addAttribute("uid",uid)
-        model.addAttribute("grade",grade)
-
+        val session = request.getSession(false)
+        if(session != null) {
+            val uid: String = session.getAttribute("uid") as String
+            val grade: String = session.getAttribute("grade") as String
+            model.addAttribute("uid",uid)
+            model.addAttribute("grade",grade)
+        }
         val info: String? = request.getParameter("info")
         if(info == null) return "redirect:/page/main"
         val books: List<Book> = userService.findBookByAttr(author = info, bookname = info, booktype = info)
@@ -58,11 +61,13 @@ class PageController(private val userService: UserService) {
     @GetMapping("/info")
     fun info(request: HttpServletRequest, model: Model): String{
         // 模板model
-        val session = request.getSession(false) ?: return "redirect:/page/sign-in"
-        val uid: String = session.getAttribute("uid") as String
-        val grade: String = session.getAttribute("grade") as String
-        model.addAttribute("uid",uid)
-        model.addAttribute("grade",grade)
+        val session = request.getSession(false)
+        if(session != null) {
+            val uid: String = session.getAttribute("uid") as String
+            val grade: String = session.getAttribute("grade") as String
+            model.addAttribute("uid",uid)
+            model.addAttribute("grade",grade)
+        }
 
 
         val bookid: Long = request.getParameter("bookid")?.toLong() ?: return "redirect:/page/main"
@@ -106,12 +111,39 @@ class PageController(private val userService: UserService) {
     @GetMapping("/classify")
     fun classifyPage(request: HttpServletRequest, model: Model): String{
         // 模板model
+        val session = request.getSession(false)
+        if(session != null) {
+            val uid: String = session.getAttribute("uid") as String
+            val grade: String = session.getAttribute("grade") as String
+            model.addAttribute("uid",uid)
+            model.addAttribute("grade",grade)
+        }
+
+        return "classify_page.html"
+    }
+
+    @GetMapping("/profile")
+    fun profilePage(request: HttpServletRequest, model: Model): String{
         val session = request.getSession(false) ?: return "redirect:/page/sign-in"
         val uid: String = session.getAttribute("uid") as String
         val grade: String = session.getAttribute("grade") as String
         model.addAttribute("uid",uid)
         model.addAttribute("grade",grade)
 
-        return "classify_page.html"
+        val userInfo = userService.findUserInfoByUid(uid)
+        model.addAttribute("userInfo",userInfo)
+
+        return "profile_page.html"
+    }
+
+    @GetMapping("/management")
+    fun managementPage(request: HttpServletRequest, model: Model): String{
+        val session = request.getSession(false) ?: return "redirect:/page/sign-in"
+        val uid: String = session.getAttribute("uid") as String
+        val grade: String = session.getAttribute("grade") as String
+        model.addAttribute("uid",uid)
+        model.addAttribute("grade",grade)
+        if(grade != "admin") return "redirect:/"
+        return "management_page.html"
     }
 }

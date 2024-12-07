@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>小小书屋-管理</title>
+
+  <link href="/style/info_page.css" rel="stylesheet">
+
+</head>
+<body>
+<header>
+  <nav>
+    <ul>
+      <li class="logo"><a href="/">小小书屋</a></li>
+      <li><a href="/page/classify">分类</a></li>
+      <li><a href="/page/bill">订单</a></li>
+      <li><a href="/page/cart">购物车</a></li>
+      <li class="account"><a href="/page/profile" th:text="${uid == null ? '游客' : uid }"></a></li>
+      <li class="search">
+        <form action="/page/search" method="get">
+          <input id="search-input" type="text" placeholder="搜索书籍..." name="info"/>
+          <input id="search-button" type="submit" value="搜索"/>
+        </form>
+      </li>
+      <li class="manage" th:if="${grade == 'admin'}"><a href="/page/management">管理网站</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+
+</main>
+
+<footer>
+  <p>&copy; 2024 小小书屋 | 仅供学习测试使用</p>
+</footer>
+</body>
+</html>

@@ -10,4 +10,5 @@ interface OrdersDao {
     fun deleteByBillid(billid: Long)
     fun update(orders: Orders)
     fun insert(order: Orders)
+    fun clearStatus()
 }

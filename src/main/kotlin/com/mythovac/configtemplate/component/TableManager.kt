@@ -228,9 +228,7 @@ class TableManager(private val jdbcTemplate: JdbcTemplate, private val passwordE
                 -- 将符合条件的记录插入到 bill 表
                 INSERT INTO bill (billid, uid, bookid, amount, status, otime, sumprice)
                 VALUES (NEW.billid, NEW.uid, NEW.bookid, NEW.amount, NEW.status, NEW.otime, NEW.sumprice);
-        
-                -- 删除 orders 表中的这条记录
-                DELETE FROM orders WHERE billid = NEW.billid;
+
             END IF;
         END;
     """

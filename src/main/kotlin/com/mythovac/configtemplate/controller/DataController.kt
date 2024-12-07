@@ -1,6 +1,8 @@
 package com.mythovac.configtemplate.controller
 
 
+import com.mythovac.configtemplate.entity.Orders
+import com.mythovac.configtemplate.entity.UserProfile
 import com.mythovac.configtemplate.service.UserService
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
@@ -122,7 +124,7 @@ class DataController(private val userService: UserService){
 
     @RequestMapping("/del-un-cart")
     fun delBookUn(request: HttpServletRequest):ResponseEntity<Map<String, String>?> {
-        val session = request.getSession(false)?:return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+        val session = request.getSession(false) ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
             .body(mapOf("message" to "用户未登录"))
 
         val sure: String = request.getParameter("sure") ?:return ResponseEntity.badRequest()
@@ -142,4 +144,73 @@ class DataController(private val userService: UserService){
         return ResponseEntity.ok(mapOf("message" to "清空完成"))
     }
 
+
+    @PostMapping("/bill-suspend")
+    fun billSuspend(request: HttpServletRequest):ResponseEntity<Map<String, String>?> {
+        val session = request.getSession(false) ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            .body(mapOf("message" to "用户未登录"))
+
+
+        val uid: String = session.getAttribute("uid") as String
+        val billidStr: String = request.getParameter("billid") ?: return ResponseEntity.badRequest().body(mapOf("message" to "billid为空"))
+
+        val billid: Long = billidStr.toLong()
+
+        val orders: Orders = userService.findOrderByBillid(billid) ?: return ResponseEntity.badRequest().body(mapOf("message" to "书籍信息错误"))
+        if(orders.uid != uid) return ResponseEntity.badRequest().body(mapOf("message" to "你没有权限修改别人的书"))
+        if(orders.status!="ongoing") return ResponseEntity.badRequest().body(mapOf("message" to "书籍已处理"))
+
+        orders.status = "suspend"
+        userService.setOrders(orders)
+
+        userService.deleteOrdersByBillid(billid)
+
+        return ResponseEntity.ok(mapOf("message" to "处理成功"))
+    }
+
+    @PostMapping("/bill-finish")
+    fun billFinished(request: HttpServletRequest):ResponseEntity<Map<String, String>?> {
+        val session = request.getSession(false)?:return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            .body(mapOf("message" to "用户未登录"))
+
+        val uid: String = session.getAttribute("uid") as String
+        val billidStr: String = request.getParameter("billid") ?: return ResponseEntity.badRequest().body(mapOf("message" to "书籍信息错误"))
+
+        val billid: Long = billidStr.toLong()
+
+        val orders: Orders = userService.findOrderByBillid(billid) ?: return ResponseEntity.badRequest().body(mapOf("message" to "书籍信息错误"))
+        if(orders.uid != uid) return ResponseEntity.badRequest().body(mapOf("message" to "你没有权限修改别人的书"))
+        if(orders.status!="ongoing") return ResponseEntity.badRequest().body(mapOf("message" to "书籍已处理"))
+
+        orders.status = "finish"
+        userService.setOrders(orders)
+
+        return ResponseEntity.ok(mapOf("message" to "处理成功"))
+    }
+
+    @PostMapping("/change-userinfo")
+    fun changeUserInfo(request: HttpServletRequest):String {
+        val session = request.getSession(false)?: return "redirect:/page/sign-in"
+        val uid = session.getAttribute("uid") as String
+
+        val username = request.getParameter("username")?.take(23) ?:return "redirect:/page/profile"
+        val email = request.getParameter("email")?.take(45) ?: ""
+        val address = request.getParameter("address")?.take(45) ?: ""
+        val gender = request.getParameter("gender") ?: "secrecy"
+        if(gender != "male" && gender != "female" && gender != "secrecy") {
+            return "redirect:/page/profile"
+        }
+        val profile = request.getParameter("profile")?.take(47) ?: ""
+        val userProfile = UserProfile(
+            uid=uid,
+            username=username,
+            email=email,
+            address=address,
+            gender=gender,
+            profile=profile
+        )
+        userService.setUserProfile(userProfile)
+
+        return "redirect:/page/profile"
+    }
 }

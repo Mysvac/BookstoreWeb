@@ -29,6 +29,7 @@ class BookImpl(private val jdbcTemplate: JdbcTemplate) : BookDao {
         return jdbcTemplate.query(sql, rowMapper)
     }
 
+
     override fun findByBookid(bookid: Long): Book? {
         val sql = "SELECT * FROM book WHERE bookid = ?"
         try{

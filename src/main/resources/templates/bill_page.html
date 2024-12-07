@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>小小书屋-个人订单</title>
     <link href="/style/cart_page.css" rel="stylesheet">
+    <script src="/scripts/bill-page.js" defer></script>
 </head>
 <body>
 <header>
@@ -13,20 +14,21 @@
             <li><a href="/page/classify">分类</a></li>
             <li><a href="/page/bill">订单</a></li>
             <li><a href="/page/cart">购物车</a></li>
-            <li class="account"><a href="#" th:text="'用户:'+${uid}"></a></li>
+            <li class="account"><a href="/page/profile" th:text="${uid == null ? '游客' : uid }"></a></li>
             <li class="search">
                 <form action="/page/search" method="get">
                     <input id="search-input" type="text" placeholder="搜索书籍..." name="info"/>
                     <input id="search-button" type="submit" value="搜索"/>
                 </form>
             </li>
+            <li class="manage" th:if="${grade == 'admin'}"><a href="/page/management">管理网站</a></li>
         </ul>
     </nav>
 </header>
 
 <main>
     <section class="book-list">
-        <h2>购物车</h2>
+        <h2>个人订单中心</h2>
         <div th:if="${#lists.isEmpty(bills)}">
             <p>该账号还没有购书记录</p>
         </div>
@@ -46,9 +48,9 @@
                 <p th:if="${bill.status == 'finish'}">已完成</p>
                 <p th:if="${bill.status == 'suspend'}">已中止</p>
             </div>
-            <div>
-                <button class="suspend" th:if="${bill.status == 'ongoing'}" th:data-billid="${bill.billid}">取消订单</button>
-                <button class="finish" th:if="${bill.status == 'ongoing'}" th:data-billid="${bill.billid}">确认收货</button>
+            <div th:if="${bill.status == 'ongoing'}">
+                <button class="suspend-btn" th:if="${bill.status == 'ongoing'}" th:data-billid="${bill.billid}">取消订单</button>
+                <button class="finish-btn" th:if="${bill.status == 'ongoing'}" th:data-billid="${bill.billid}">确认收货</button>
             </div>
         </div>
 

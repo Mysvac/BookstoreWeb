@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <title>小小书屋-书籍详情</title>
 
-    <link href="/style/info_page.css" rel="stylesheet">
-
+    <link href="/style/profile_page.css" rel="stylesheet">
+    <script src="/scripts/profile_page.js" defer></script>
 </head>
 <body>
 <header>
@@ -15,39 +15,84 @@
             <li><a href="/page/classify">分类</a></li>
             <li><a href="/page/bill">订单</a></li>
             <li><a href="/page/cart">购物车</a></li>
-            <li class="account"><a href="#" th:text="'用户:'+${uid}"></a></li>
+            <li class="account"><a href="/page/profile" th:text="${uid == null ? '游客' : uid }"></a></li>
             <li class="search">
                 <form action="/page/search" method="get">
                     <input id="search-input" type="text" placeholder="搜索书籍..." name="info"/>
                     <input id="search-button" type="submit" value="搜索"/>
                 </form>
             </li>
+            <li class="manage" th:if="${grade == 'admin'}"><a href="/page/management">管理网站</a></li>
         </ul>
     </nav>
 </header>
 
-<main>
-    <section class="book-list">
-        <h2>详细信息</h2>
-
-        <div class="book-info">
-            <img class="book-image" th:src="@{/images/book/{bookname}.png(bookname=${book.bookname})}" th:alt="${book.bookname}">
-            <div class="book-details">
-                <h3 th:text="${book.bookname}">Book Title</h3> <!-- Book Title -->
-                <p th:text="'简介: ' + ${book.profile}">Book Profile</p>
-                <p th:text="'作者: ' + ${book.author}">Author Name</p>
-                <p class="price" th:text="'售价: ￥' + ${book.price/100} + '.' + ${book.price%100}">Price</p>
-                <p th:text="'库存: ' + ${book.stock}">Stock</p>
-                <p th:text="'销售量: ' + ${book.sales}">Sales</p>
-                <div class="book-actions">
-                    <button class="buy" th:data-bookid="${book.bookid}">直接购买</button>
-                    <button class="insert-to-cart"  th:data-bookid="${book.bookid}">加入购物车</button>
-                </div>
-            </div>
+<main class="user-profile">
+    <section class="profile-header">
+        <h1 class="username" th:text="${userInfo != null && userInfo.username!='' ? userInfo.username : 'Username is null'}"></h1>
+    </section>
+    <section class="profile-info">
+        <div class="info-item">
+            <label for="uid">UID:</label>
+            <span id="uid" th:text="${userInfo != null ? userInfo.uid : 'null'}"></span>
         </div>
-
+        <div class="info-item">
+            <label for="password">Password:</label>
+            <span id="password">******</span>
+        </div>
+        <div class="info-item">
+            <label for="grade">Grade:</label>
+            <span id="grade" th:text="${userInfo != null ? userInfo.grade : 'null'}"></span>
+        </div>
+        <div class="info-item">
+            <label for="gender">Gender:</label>
+            <span th:text="${userInfo != null ? userInfo.gender : 'null'}"></span>
+        </div>
+        <div class="info-item">
+            <label for="address">Address:</label>
+            <span th:text="${userInfo != null ? userInfo.address : 'null'}"></span>
+        </div>
+        <div class="info-item">
+            <label for="email">Email:</label>
+            <span th:text="${userInfo != null ? userInfo.email : 'null'}"></span>
+        </div>
+        <div class="info-item">
+            <label for="profile">Profile:</label>
+            <span th:text="${userInfo != null ? userInfo.profile : 'null'}"></span>
+        </div>
+    </section>
+    <section  class="profile-change">
+        <button id="change-info-button" class="change-info-button">修改个人信息</button>
     </section>
 </main>
+
+<!-- 表单界面，默认隐藏 -->
+<section class="form-section" id="form-section">
+    <h2>修改个人信息</h2>
+    <form id="user-info-form" action="/data/change-userinfo" method="post">
+        <label for="username">用户名:</label>
+        <input type="text" id="username" name="username" th:value="${userInfo != null && userInfo.username!='' ? userInfo.username : 'Username is null'}">
+
+        <label for="email">邮箱:</label>
+        <input type="email" id="email" name="email" th:value="${userInfo != null ? userInfo.email : 'null'}">
+
+        <label for="address">地址:</label>
+        <input type="text" id="address" name="address" th:value="${userInfo != null ? userInfo.address : 'null'}">
+
+        <label for="gender">性别:</label>
+        <select id="gender" name="gender">
+            <option value="male" selected>男-male</option>
+            <option value="female">女-female</option>
+            <option value="secrecy">保密-secrecy</option>
+        </select>
+
+        <label for="profile">简介:</label>
+        <input type="text" id="profile" name="profile" th:value="${userInfo != null ? userInfo.profile : 'null'}">
+
+        <button id="submit" type="submit">保存</button>
+        <button type="button" onclick="toggleForm()">取消</button>
+    </form>
+</section>
 
 <footer>
     <p>&copy; 2024 小小书屋 | 仅供学习测试使用</p>
