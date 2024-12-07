@@ -31,7 +31,7 @@ class BillImpl(private val jdbcTemplate: JdbcTemplate) : BillDao {
     }
 
     override fun findByAttr(billid: Long, uid: String, bookid: Long): List<Bill> {
-        val sql = "SELECT * FROM bill WHERE billid = ? OR uid = ? OR bookid = ?"
+        val sql = "SELECT * FROM bill WHERE billid = ? OR uid = ? OR bookid = ? ORDER BY billid DESC "
         return jdbcTemplate.query(sql, rowMapper, billid, uid, bookid)
     }
 }

@@ -98,9 +98,6 @@ class PageController(private val userService: UserService) {
 
         val bills: List<BillDetail> = userService.findBillAndOrderByUid(uid)
 
-        if(bills.isEmpty()) println("bills is empty")
-        else println("bills is not empty")
-
         model.addAttribute("bills",bills)
 
         return "bill_page.html"

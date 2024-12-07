@@ -235,3 +235,19 @@ footer {
     bottom: 0;               /* 底部对齐 */
     width: 100%;             /* 宽度占满整个页面 */
 }
+
+.ope-all{
+    display: flex;
+    padding-left: 60%;
+    align-items: center;          /* 垂直居中对齐 */
+}
+.buy-all ,
+.del-all{
+    margin-left: 8%;
+    margin-right: 8%;
+}
+
+.buy-unable ,
+.buy-unable:hover{
+    background: #cccccc;
+}

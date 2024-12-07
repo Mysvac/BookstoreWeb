@@ -27,4 +27,7 @@ class MainController(private val userService: UserService) {
         model.addAttribute("books",books)
         return "main_page.html"
     }
+
+    // SET GLOBAL log_bin_trust_function_creators = 1;
+
 }

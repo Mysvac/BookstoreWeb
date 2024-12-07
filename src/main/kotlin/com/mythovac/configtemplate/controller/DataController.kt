@@ -1,5 +1,6 @@
 package com.mythovac.configtemplate.controller
 
+import com.mythovac.configtemplate.entity.Book
 import com.mythovac.configtemplate.service.UserService
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
@@ -72,4 +73,73 @@ class DataController(private val userService: UserService){
         if(msg == "购买成功") return ResponseEntity.ok(mapOf("message" to msg))
         return ResponseEntity.badRequest().body(mapOf("message" to msg))
     }
+
+    @PostMapping("/buy-all")
+    fun buyAllBook(request: HttpServletRequest):ResponseEntity<Map<String, String>?> {
+        val session = request.getSession(false)?:return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            .body(mapOf("message" to "用户未登录"))
+
+        val sure: String = request.getParameter("sure") ?:return ResponseEntity.badRequest()
+            .body(mapOf("message" to "无确认码"))
+        if(sure!="1") return ResponseEntity.badRequest().body(mapOf("message" to "无确认码"))
+
+        val uid = session.getAttribute("uid") as String
+
+        val cartbookList =  userService.findCartbookByUid(uid)
+
+        for(cartbook in cartbookList){
+            if(cartbook.amount>cartbook.stock){
+                return ResponseEntity.badRequest()
+                    .body(mapOf("message" to "有书籍库存不足，请检查"))
+            }
+            if(cartbook.available!=1){
+                return ResponseEntity.badRequest()
+                    .body(mapOf("message" to "有书籍已停售，请检查"))
+            }
+        }
+
+        for(cartbook in cartbookList) {
+            userService.insertOrdersByAttr(uid = uid,bookid=cartbook.bookid, amount = cartbook.amount)
+        }
+
+        return ResponseEntity.ok(mapOf("message" to "已全部购买"))
+    }
+
+    @RequestMapping("/del-all-cart")
+    fun delAllCartBook(request: HttpServletRequest):ResponseEntity<Map<String, String>?> {
+        val session = request.getSession(false)?:return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            .body(mapOf("message" to "用户未登录"))
+
+        val sure: String = request.getParameter("sure") ?:return ResponseEntity.badRequest()
+            .body(mapOf("message" to "无确认码"))
+        if(sure!="1") return ResponseEntity.badRequest().body(mapOf("message" to "无确认码"))
+
+        val uid = session.getAttribute("uid") as String
+        userService.deleteCartByUid(uid)
+
+        return ResponseEntity.ok(mapOf("message" to "清空完成"))
+    }
+
+    @RequestMapping("/del-un-cart")
+    fun delBookUn(request: HttpServletRequest):ResponseEntity<Map<String, String>?> {
+        val session = request.getSession(false)?:return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            .body(mapOf("message" to "用户未登录"))
+
+        val sure: String = request.getParameter("sure") ?:return ResponseEntity.badRequest()
+            .body(mapOf("message" to "无确认码"))
+        if(sure!="1") return ResponseEntity.badRequest().body(mapOf("message" to "无确认码"))
+
+        val uid = session.getAttribute("uid") as String
+
+        val cartbookList =  userService.findCartbookByUid(uid)
+
+        for(cartbook in cartbookList){
+            if(cartbook.available!=1){
+                userService.deleteCart(uid=uid,bookid=cartbook.bookid)
+            }
+        }
+
+        return ResponseEntity.ok(mapOf("message" to "清空完成"))
+    }
+
 }

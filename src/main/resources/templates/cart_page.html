@@ -28,7 +28,14 @@
 <main>
     <section class="book-list">
         <h2>购物车</h2>
-        <div th:if="${#lists.isEmpty(cartbooks)}">
+
+        <div class="ope-all">
+            <button id="del-un" class="del-ul" th:if="${!#lists.isEmpty(cartbooks)}">清空停售</button>
+            <button id="del-all" class="del-all" th:if="${!#lists.isEmpty(cartbooks)}">全部清空</button>
+            <button id="buy-all" class="buy-all" th:if="${!#lists.isEmpty(cartbooks)}">全部购买</button>
+        </div>
+
+        <div class="book" th:if="${#lists.isEmpty(cartbooks)}">
             <p>未找到相关书籍</p>
         </div>
         <div class="book" th:each="book : ${cartbooks}">
@@ -46,7 +53,8 @@
             </div>
             <button class="update-num" th:data-bookid="${book.bookid}">更新数量</button>
             <button class="delete" th:data-bookid="${book.bookid}">删除</button>
-            <button class="buy" th:data-bookid="${book.bookid}">购买</button>
+            <button class="buy" th:data-bookid="${book.bookid}" th:if="${book.available==1}">购买</button>
+            <button class="buy-unable" th:data-bookid="${book.bookid}" th:if="${book.available==0}">停售</button>
         </div>
 
     </section>

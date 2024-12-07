@@ -115,3 +115,67 @@ buyButtons.forEach(button => {
             });
     });
 });
+
+
+document.getElementById("del-all").addEventListener('click',function(){
+    const formData = new FormData();
+    formData.append("sure", "1");
+    // 发送 POST 请求
+    fetch('/data/del-all-cart', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'Accept': 'application/json',
+        }
+    })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);  // 这里的 data.message 是从服务器返回的提示信息
+            window.location.href = '/page/cart';
+        })
+        .catch(error => {
+            console.log("error:"+error);
+        });
+});
+
+document.getElementById("buy-all").addEventListener('click',function(){
+    const formData = new FormData();
+    formData.append("sure", "1");
+    // 发送 POST 请求
+    fetch('/data/buy-all', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'Accept': 'application/json',
+        }
+    })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);  // 这里的 data.message 是从服务器返回的提示信息
+            window.location.href = '/page/cart';
+        })
+        .catch(error => {
+            console.log("error:"+error);
+        });
+});
+
+document.getElementById("del-un").addEventListener('click',function(){
+    const formData = new FormData();
+    formData.append("sure", "1");
+    // 发送 POST 请求
+    fetch('/data/del-un-cart', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'Accept': 'application/json',
+        }
+    })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);  // 这里的 data.message 是从服务器返回的提示信息
+            window.location.href = '/page/cart';
+        })
+        .catch(error => {
+            console.log("error:"+error);
+        });
+});
