@@ -1,7 +1,7 @@
 package com.mythovac.configtemplate.controller
 
 
-import com.mythovac.configtemplate.entity.Bill
+
 import com.mythovac.configtemplate.entity.BillDetail
 import com.mythovac.configtemplate.entity.Book
 import com.mythovac.configtemplate.entity.Cartbook
