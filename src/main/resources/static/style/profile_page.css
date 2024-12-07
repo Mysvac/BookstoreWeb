@@ -191,7 +191,8 @@ footer {
     text-align: center;
     margin: auto;
 }
-.change-info-button{
+.change-info-button,
+.sign-out {
     margin: auto;
 }
 
