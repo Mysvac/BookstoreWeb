@@ -1,5 +1,5 @@
  
-    个人数据库实验课项目
+    测试项目
     Kotlin + Springboot + JDK21 + JPA
     图书销售系统
 
