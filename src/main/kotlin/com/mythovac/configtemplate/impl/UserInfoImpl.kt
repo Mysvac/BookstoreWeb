@@ -44,4 +44,23 @@ class UserInfoImpl(private val jdbcTemplate: JdbcTemplate) {
             """
         return jdbcTemplate.query(sql, rowMapper)
     }
+
+    // 查询根据特征查询用户的详细信息
+    fun findUserIndoByAttr(uid: String, username: String): List<UserInfo> {
+        val sql = """
+            SELECT 
+            users.uid AS uid,
+            grade,
+            gender,
+            address,
+            username,
+            email,
+            profile
+            FROM users 
+            JOIN userProfile 
+            ON users.uid = userProfile.uid
+            WHERE userProfile.uid LIKE ? OR username LIKE ?
+            """
+        return jdbcTemplate.query(sql, rowMapper, "%$uid%", "%$username%")
+    }
 }

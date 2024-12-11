@@ -27,7 +27,7 @@ class BillImpl(private val jdbcTemplate: JdbcTemplate) : BillDao {
     }
     // 查询全部
     override fun findAll(): List<Bill> {
-        val sql = "SELECT * FROM bill"
+        val sql = "SELECT * FROM bill ORDER BY billid DESC"
         return jdbcTemplate.query(sql, rowMapper)
     }
     // 根据billid删除
@@ -37,7 +37,7 @@ class BillImpl(private val jdbcTemplate: JdbcTemplate) : BillDao {
     }
     // 根据特征查询
     override fun findByAttr(billid: Long, uid: String, bookid: Long): List<Bill> {
-        val sql = "SELECT * FROM bill WHERE billid = ? OR uid = ? OR bookid = ? ORDER BY billid DESC "
+        val sql = "SELECT * FROM bill WHERE billid = ? OR uid = ? OR bookid = ? ORDER BY billid DESC"
         return jdbcTemplate.query(sql, rowMapper, billid, uid, bookid)
     }
 }

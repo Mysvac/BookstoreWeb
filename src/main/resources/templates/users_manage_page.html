@@ -41,6 +41,13 @@
 
         <!-- 右侧内容区域 -->
         <div class="content">
+            <div class="search-div">
+                <form class="search-div" method="get" action="/page/manage-users">
+                    <input id="search" class="search" name="search" type="text"  placeholder="根据uid查询...">
+                    <input class="submit" type="submit" value="搜索">
+                </form>
+            </div>
+
             <div th:if="${#lists.isEmpty(userInfos)}">
                 <p>暂无用户</p>
             </div>

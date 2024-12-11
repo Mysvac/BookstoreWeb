@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>小小书屋-个人订单</title>
-    <link href="/style/cart_page.css" rel="stylesheet">
+    <link href="/style/bill_page.css" rel="stylesheet">
     <script src="/scripts/bill-page.js" defer></script>
 </head>
 <body>
@@ -28,9 +28,17 @@
 
 <main>
     <section class="book-list">
-        <h2>个人订单中心</h2>
+        <div  class="search-div-out">
+            <h2>个人订单中心</h2>
+            <form class="search-div" method="get" action="/page/bill">
+                <input id="search" class="search" name="search" type="text"  placeholder="根据订单/书籍号查询...">
+                <input class="submit" type="submit" value="搜索">
+            </form>
+        </div>
+
+        <br>
         <div th:if="${#lists.isEmpty(bills)}">
-            <p>该账号还没有购书记录</p>
+            <p>空</p>
         </div>
         <div class="book" th:each="bill : ${bills}">
 

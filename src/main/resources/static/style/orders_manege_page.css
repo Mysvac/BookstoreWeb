@@ -70,7 +70,8 @@ nav .search form {
 }
 
 
-#search-input {
+#search-input ,
+#search {
     padding: 5px 15px;          /* 内边距，增加输入框的可点击区域 */
     font-size: 14px;             /* 字体大小为14px */
     border: 1px solid #ccc;     /* 边框颜色为浅灰色 */
@@ -79,7 +80,8 @@ nav .search form {
     transition: border-color 0.3s; /* 输入框获得焦点时，边框颜色平滑过渡 */
 }
 
-#search-input:focus {
+#search-input:focus ,
+#search:focus {
     border-color: #222;         /* 获得焦点时，边框颜色变为深色 */
 }
 
@@ -111,7 +113,8 @@ main {
 
 
 /* 设置按钮的样式 */
-button {
+button ,
+.submit{
     background-color: #222; /* 深色背景 */
     color: #fff;             /* 白色文字 */
     border: none;            /* 去除默认的边框 */
@@ -123,9 +126,11 @@ button {
 }
 
 /* 设置按钮的鼠标悬停效果 */
-button:hover {
+button:hover ,
+.submit:hover{
     background-color: #444; /* 鼠标悬停时背景色变为深灰色 */
 }
+
 
 /* 设置页脚的样式 */
 footer {
@@ -233,3 +238,11 @@ footer {
     width: 15%;
 }
 
+.search-div {
+    text-align: center;
+}
+
+#search {
+    height: 40px;
+    width: 24%;
+}

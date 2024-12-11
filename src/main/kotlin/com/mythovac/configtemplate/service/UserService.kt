@@ -100,6 +100,12 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
     fun findAllUserInfos(): List<UserInfo> {
         return userInfoImpl.findAllUserIndo()
     }
+    /**
+     * 根据特征查询全部用户具体信息
+     * */
+    fun findUserInfoByAttr(uid: String = "屙蠺錒", username: String="屙蠺錒"): List<UserInfo>{
+        return userInfoImpl.findUserIndoByAttr(uid=uid,username=username)
+    }
 
     /**
      * 查询购物车数据 按照uid
@@ -177,6 +183,51 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
     }
 
     /**
+     * 查询指定用户的订单和账单
+     * 根据特征
+     * */
+    fun findBillAndOrderByAttr(uid : String,billid: Long,bookname: String): List<BillDetail>{
+        val res: MutableList<BillDetail> = mutableListOf()
+        val orders = ordersImpl.findByAttr(uid=uid)
+        if(orders.isNotEmpty()){
+            for(order in orders){
+                val tmpBookname = bookImpl.findByBookid(order.bookid)!!.bookname
+                if(order.billid==billid || tmpBookname.contains(bookname)){
+                    res.add(BillDetail(
+                        billid = order.billid,
+                        uid = order.uid,
+                        bookid = order.bookid,
+                        amount = order.amount,
+                        status = order.status,
+                        otime = order.otime,
+                        sumprice = order.sumprice,
+                        bookname = tmpBookname
+                    ))
+                }
+            }
+        }
+        val bills = billImpl.findByAttr(uid=uid)
+        if(bills.isNotEmpty()){
+            for (bill in bills){
+                val tmpBookname = bookImpl.findByBookid(bill.bookid)!!.bookname
+                if(bill.billid==billid || tmpBookname.contains(bookname)){
+                    res.add(BillDetail(
+                        billid = bill.billid,
+                        uid = bill.uid,
+                        bookid = bill.bookid,
+                        amount = bill.amount,
+                        status = bill.status,
+                        otime = bill.otime,
+                        sumprice = bill.sumprice,
+                        bookname = tmpBookname
+                    ))
+                }
+            }
+        }
+        return res
+    }
+
+    /**
      * 查询指定的订单，根据订单号billid
      * */
     fun findOrderByBillid(billid: Long): Orders?{
@@ -241,6 +292,30 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
                     status = bill.status,
                     otime = bill.otime,
                     sumprice = bill.sumprice,
+                    bookname = bookname
+                ))
+            }
+        }
+        return res
+    }
+
+    /**
+     * 根据特征查询订单
+     * */
+    fun findOrdersByAttr(billid: Long=-1, uid: String="琺鑪覭", bookid: Long=-1): List<BillDetail> {
+        val res: MutableList<BillDetail> = mutableListOf()
+        val orders = ordersImpl.findByAttr(uid = uid, bookid = bookid, billid = billid)
+        if(orders.isNotEmpty()){
+            for(order in orders){
+                val bookname = bookImpl.findByBookid(order.bookid)!!.bookname
+                res.add(BillDetail(
+                    billid = order.billid,
+                    uid = order.uid,
+                    bookid = order.bookid,
+                    amount = order.amount,
+                    status = order.status,
+                    otime = order.otime,
+                    sumprice = order.sumprice,
                     bookname = bookname
                 ))
             }
@@ -342,7 +417,7 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
     fun insertOneOrdersByAttr(uid: String, bookid: Long, amount: Int = -1): String {
         if(amount<=0) return "购买数量异常"  // 数量错误
         val book = bookImpl.findByBookid(bookid) ?: return "书籍不存在" // 书籍不存在
-        if(book.stock < amount) return "数据数量不住" // 数量不足
+        if(book.stock < amount) return "书籍数量不足" // 数量不足
         if(book.available == 0) return "书籍不可出售" // 书籍不可售
 
         book.stock -= amount

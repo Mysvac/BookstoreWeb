@@ -41,6 +41,12 @@
 
         <!-- 右侧内容区域 -->
         <div class="content">
+            <div class="search-div">
+                <form class="search-div" method="get" action="/page/manage-books">
+                    <input id="search" class="search" name="search" type="text" placeholder="根据编号或书名查询...">
+                    <input class="submit" type="submit" value="搜索">
+                </form>
+            </div>
             <div th:if="${#lists.isEmpty(books)}">
                 <p>暂无书籍</p>
             </div>
@@ -64,8 +70,9 @@
                 </div>
                 <button class="update-book"  th:data-bookid="${book.bookid}" >修改</button>
                 <button class="delete-book"  th:data-bookid="${book.bookid}" >删除</button>
-                <button class="buy-able" th:data-bookid="${book.bookid}" th:text="${book.available==1 ? '销售中' : '停售中'}">销售中</button>
-                <span th:if="${book.available==0}" style="color: red"> !*!</span>
+                <button class="buy-able" th:data-bookid="${book.bookid}" th:text="${book.available==1 ? '销售中' : '停售中'}"
+                th:style="${book.available==1 ? '' : 'background-color: red;'}">销售中</button>
+
             </div>
 
         </div>

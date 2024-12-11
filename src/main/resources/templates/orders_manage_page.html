@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>小小书屋-管理</title>
 
-  <link href="/style/management_page.css" rel="stylesheet">
+  <link href="/style/orders_manege_page.css" rel="stylesheet">
   <script src="/scripts/orders_manage_page.js" defer></script>
 </head>
 <body>
@@ -41,8 +41,14 @@
 
     <!-- 右侧内容区域 -->
     <div class="content">
+      <div class="search-div">
+        <form class="search-div" method="get" action="/page/manage-orders">
+          <input id="search" class="search" name="search" type="text"  placeholder="根据订单/用户/书籍号查询...">
+          <input class="submit" type="submit" value="搜索">
+        </form>
+      </div>
       <div th:if="${#lists.isEmpty(orders)}">
-        <p>无进行中的订单</p>
+        <p>空</p>
       </div>
       <div class="bill" th:each="bill : ${orders}">
         <div class="profile">

@@ -146,8 +146,21 @@ class PageController(private val userService: UserService) {
         model.addAttribute("grade",grade)
 
         // 获取当前用户的订单/账单列表，从数据库
-        val bills: List<BillDetail> = userService.findBillAndOrderByUid(uid)
-        model.addAttribute("bills",bills)
+        val search: String = request.getParameter("search") ?: ""
+        if(search.isEmpty()){
+            val bills: List<BillDetail> = userService.findBillAndOrderByUid(uid)
+            model.addAttribute("bills",bills)
+        }
+        else{
+            var billid: Long = -1
+            try{
+                billid = search.toLong()
+            }catch(_: NumberFormatException){}
+            val bills: List<BillDetail> = userService.findBillAndOrderByAttr(uid=uid,billid = billid , bookname = search)
+            model.addAttribute("bills",bills)
+        }
+
+
 
         // 转发至html文件
         return "bill_page.html"
@@ -205,12 +218,14 @@ class PageController(private val userService: UserService) {
         val session = request.getSession(false) ?: return "redirect:/page/sign-in"
         val uid: String = session.getAttribute("uid") as String
         val grade: String = session.getAttribute("grade") as String
-        if(grade!="admin"){ return "redirect:/" }
         model.addAttribute("uid",uid)
         model.addAttribute("grade",grade)
 
         // 获取目标个人信息界面
         val goal: String = request.getParameter("uid")
+        // 权限检查
+        if(grade!="admin" &&  uid!=goal){ return "redirect:/" }
+
         val userInfo = userService.findUserInfoByUid(goal)
         model.addAttribute("userInfo",userInfo)
 
@@ -273,9 +288,25 @@ class PageController(private val userService: UserService) {
         model.addAttribute("grade",grade)
         if(grade != "admin") return "redirect:/"
 
-        // 获取进行中的订单信息，从数据库
-        val orders: List<BillDetail>  = userService.findAllOrders()
-        model.addAttribute("orders",orders)
+
+        // 查询图书信息表，从数据库
+        val search = request.getParameter("search") ?: ""
+
+        // 查询图书信息表，从数据库
+        if(search==""){
+            val orders: List<BillDetail>  = userService.findAllOrders()
+            model.addAttribute("orders",orders)
+        }
+        else{
+            var tmpid: Long = -1
+            try{
+                tmpid = search.toLong()
+            }
+            catch(_: NumberFormatException){}
+            // 获取进行中的订单信息，从数据库
+            val orders: List<BillDetail>  = userService.findOrdersByAttr(uid = search, bookid = tmpid, billid = tmpid)
+            model.addAttribute("orders",orders)
+        }
 
         // 转发至html文件
         return "orders_manage_page.html"
@@ -298,7 +329,15 @@ class PageController(private val userService: UserService) {
         if(grade != "admin") return "redirect:/"
 
         // 查询图书信息表，从数据库
-        val books: List<Book>  = userService.findAllBook()
+        val search = request.getParameter("search") ?: ""
+        var bookid: Long = -1
+        try{
+            bookid = search.toLong()
+        }
+        catch(_: NumberFormatException){}
+
+        val books: List<Book>  = userService.findBookByAttr(bookid=bookid,bookname=search)
+        // val books: List<Book>  = userService.findAllBook()
         model.addAttribute("books",books)
 
         // 转发至html文件
@@ -321,7 +360,8 @@ class PageController(private val userService: UserService) {
         if(grade != "admin") return "redirect:/"
 
         // 查询用户信息，从数据库
-        val userInfos: List<UserInfo>  = userService.findAllUserInfos()
+        val search = request.getParameter("search") ?: ""
+        val userInfos: List<UserInfo>  = userService.findUserInfoByAttr(uid = search)
         model.addAttribute("userInfos",userInfos)
 
         // 转发至html文件

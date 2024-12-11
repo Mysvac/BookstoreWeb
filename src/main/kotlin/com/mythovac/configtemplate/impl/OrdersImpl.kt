@@ -28,7 +28,7 @@ class OrdersImpl(private val jdbcTemplate: JdbcTemplate) : OrdersDao {
 
     // 查询全部
     override fun findAll(): List<Orders>{
-        val sql = "SELECT * FROM orders WHERE status = 'ongoing'"
+        val sql = "SELECT * FROM orders WHERE status = 'ongoing' ORDER BY billid DESC"
         return jdbcTemplate.query(sql, rowMapper)
     }
 
@@ -40,7 +40,7 @@ class OrdersImpl(private val jdbcTemplate: JdbcTemplate) : OrdersDao {
 
     // 特征查询
     override fun findByAttr(billid: Long, uid: String, bookid: Long): List<Orders> {
-        val sql = "SELECT * FROM orders WHERE ((billid = ? OR uid = ? OR bookid = ?) AND status = 'ongoing')"
+        val sql = "SELECT * FROM orders WHERE ((billid = ? OR uid = ? OR bookid = ?) AND status = 'ongoing') ORDER BY billid DESC"
         return jdbcTemplate.query(sql, rowMapper, billid, uid, bookid)
     }
 

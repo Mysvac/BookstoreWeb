@@ -70,8 +70,7 @@ nav .search form {
 }
 
 
-#search-input ,
-#search {
+#search-input {
     padding: 5px 15px;          /* 内边距，增加输入框的可点击区域 */
     font-size: 14px;             /* 字体大小为14px */
     border: 1px solid #ccc;     /* 边框颜色为浅灰色 */
@@ -80,8 +79,7 @@ nav .search form {
     transition: border-color 0.3s; /* 输入框获得焦点时，边框颜色平滑过渡 */
 }
 
-#search-input:focus ,
-#search:focus {
+#search-input:focus {
     border-color: #222;         /* 获得焦点时，边框颜色变为深色 */
 }
 
@@ -110,11 +108,107 @@ main {
     overflow-y: auto;      /* 如果内容溢出，显示垂直滚动条 */
 }
 
+/* 设置横幅区域的样式 */
+.banner {
+    background-color: #ddd;  /* 浅灰色背景 */
+    padding: 40px;           /* 设置内边距为40px */
+    text-align: center;      /* 文字居中对齐 */
+    border-radius: 8px;      /* 圆角效果 */
+    margin-bottom: 30px;     /* 下方外边距30px */
+}
 
+/* 设置横幅标题的样式 */
+.banner h1 {
+    font-size: 32px;         /* 字体大小为32px */
+    color: #333;             /* 深灰色文字 */
+}
+
+/* 设置横幅副标题的样式 */
+.banner p {
+    font-size: 18px;         /* 字体大小为18px */
+    color: #555;             /* 中灰色文字 */
+}
+/* 设置书籍列表的样式 */
+.books {
+    display: flex;                /* 使用flex布局使书籍横向排列 */
+    flex-direction: column;       /* 让书籍垂直排列 */
+    gap: 20px;                    /* 设置书籍之间的间隔为20px */
+    justify-content: flex-start;  /* 从顶部开始排列 */
+    padding: 20px;                /* 添加一些内边距 */
+}
+
+/* 设置每本书的样式 */
+.book {
+    display: flex;                /* 使用flex布局 */
+    align-items: center;          /* 垂直居中对齐 */
+    background-color: #fff;       /* 白色背景 */
+    padding: 15px;                /* 内边距15px */
+    width: 100%;                  /* 宽度为100%，根据父容器宽度决定 */
+    max-width: 1200px;            /* 限制最大宽度，避免书籍过于宽 */
+    border-radius: 8px;           /* 圆角效果 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* 轻微的阴影效果 */
+    text-align: left;             /* 文字左对齐 */
+    margin: 20px auto;
+}
+
+/* 设置书籍封面的样式 */
+.book img {
+    width: 120px;                 /* 设置图片宽度 */
+    height: 120px;                /* 高度固定 */
+    object-fit: contain;            /* 保持图片比例，裁剪超出部分 */
+    border-radius: 4px;           /* 圆角效果 */
+    margin-right: 20px;           /* 右侧间距 */
+}
+
+/* 设置书籍标题的样式 */
+.book h5 {
+    font-size: 18px;              /* 字体大小为18px */
+    margin: 0 0 10px 0;           /* 上下外边距为10px */
+    color: #333;                  /* 深灰色文字 */
+    font-weight: bold;            /* 加粗字体 */
+}
+
+/* 设置书籍作者名称的样式 */
+.book p {
+    font-size: 14px;              /* 字体大小为14px */
+    color: #666;                  /* 中灰色文字 */
+    margin: 5px 0;                /* 上下外边距 */
+}
+
+.profile {
+    margin: auto 4%;
+    width: 14%;
+}
+.money {
+    margin: auto 4%;
+    width: 10%;
+}
+
+/* 设置书籍价格的样式 */
+.sum-price {
+    font-size: 20px;              /* 字体大小为18px */
+    font-weight: bold;            /* 加粗字体 */
+    color: #000;                  /* 黑色文字 */
+    margin-top: 10px;             /* 顶部外边距 */
+}
+
+/* 设置购买按钮的样式 */
+.book button {
+    background-color: #007bff;    /* 按钮背景色 */
+    color: #fff;                  /* 按钮文字颜色 */
+    border: none;                 /* 去掉边框 */
+    padding: 10px 15px;           /* 按钮内边距 */
+    border-radius: 4px;           /* 圆角效果 */
+    cursor: pointer;              /* 鼠标悬停时显示手形光标 */
+    margin-left: auto;            /* 将按钮推到右侧 */
+}
+
+.book button:hover {
+    background-color: #0056b3;    /* 悬停时改变按钮颜色 */
+}
 
 /* 设置按钮的样式 */
-button ,
-.submit{
+button {
     background-color: #222; /* 深色背景 */
     color: #fff;             /* 白色文字 */
     border: none;            /* 去除默认的边框 */
@@ -126,8 +220,7 @@ button ,
 }
 
 /* 设置按钮的鼠标悬停效果 */
-button:hover ,
-.submit:hover{
+button:hover {
     background-color: #444; /* 鼠标悬停时背景色变为深灰色 */
 }
 
@@ -143,108 +236,63 @@ footer {
     width: 100%;             /* 宽度占满整个页面 */
 }
 
-/* 设置容器的布局为flex，确保左右区域的布局 */
-.container {
+.ope-all{
     display: flex;
-    height: 100%;
-    width: 100%;
-}
-
-/* 左侧导航栏样式 */
-.sidebar {
-    width: 20%;              /* 左侧占 20% */
-    background-color: #333;
-    padding: 10px;
-    border-radius: 8px;
-    color: #fff;
-    height: 100%;            /* 让左侧导航栏的高度充满整个页面 */
-    box-sizing: border-box;
-}
-
-/* 左侧导航栏的列表项样式 */
-.sidebar ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-.sidebar-item {
-    padding: 10px;
-    cursor: pointer;
-    margin: 5px 0;
-    transition: background-color 0.3s;
-}
-
-.sidebar-item:hover {
-    background-color: #444;
-}
-
-/* 右侧内容区域样式 */
-.content {
-    width: 80%;              /* 右侧占 80% */
-    padding: 20px;
-    box-sizing: border-box;
-    background-color: #f4f4f4;
-    height: 100%;          /* 让右侧内容区域的高度充满整个页面 */
-    overflow-y: auto;        /* 如果内容溢出，显示垂直滚动条 */
-}
-
-/* 设置导航链接的样式 */
-.sidebar-item a {
-    color: #fff;             /* 设置链接文字颜色为白色 */
-    text-decoration: none;   /* 去除默认的下划线 */
-    font-size: 16px;         /* 设置字体大小为16px */
-    padding: 5px 15px;      /* 设置内边距，上下5px，左右15px */
-    transition: background-color 0.3s; /* 设置背景色变化的过渡效果 */
-}
-
-
-/* 设置每本书的样式 */
-.a-userInfo {
-    display: flex;                /* 使用flex布局 */
+    padding-left: 60%;
     align-items: center;          /* 垂直居中对齐 */
-    background-color: #fff;       /* 白色背景 */
-    padding: 15px;                /* 内边距15px */
-    width: 100%;                  /* 宽度为100%，根据父容器宽度决定 */
-    max-width: 1200px;            /* 限制最大宽度，避免书籍过于宽 */
-    border-radius: 8px;           /* 圆角效果 */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* 轻微的阴影效果 */
-    text-align: left;             /* 文字左对齐 */
-    margin: 20px auto;
+}
+.buy-all ,
+.del-all{
+    margin-left: 8%;
+    margin-right: 8%;
 }
 
-
-/* 设置书籍标题的样式 */
-.a-userInfo h5 {
-    font-size: 18px;              /* 字体大小为18px */
-    margin: 0 0 10px 0;           /* 上下外边距为10px */
-    color: #333;                  /* 深灰色文字 */
-    font-weight: bold;            /* 加粗字体 */
+.buy-unable ,
+.buy-unable:hover{
+    background: gray;
+    color: red;
 }
 
-/* 设置书籍作者名称的样式 */
-.a-userInfo p {
-    font-size: 14px;              /* 字体大小为14px */
-    color: #666;                  /* 中灰色文字 */
-    margin: 5px 0;                /* 上下外边距 */
-}
-.a-userInfo button {
-    margin-left: 5%;
+.search-div-out {
+    display: flex;
 }
 
-.profile {
-    margin: auto 4%;
-    width: 26%;
-}
-.money {
-    margin: auto 4%;
-    width: 15%;
-}
 
 .search-div {
+    flex: 1;
     text-align: center;
 }
 
 #search {
     height: 40px;
     width: 24%;
+}
+/* 设置按钮的样式 */
+.submit{
+    background-color: #222; /* 深色背景 */
+    color: #fff;             /* 白色文字 */
+    border: none;            /* 去除默认的边框 */
+    padding: 10px 20px;      /* 设置内边距，垂直10px，水平20px */
+    border-radius: 4px;      /* 圆角效果 */
+    cursor: pointer;        /* 鼠标悬停时变为指针 */
+    margin-top: 10px;        /* 上方外边距10px */
+    transition: background-color 0.3s; /* 背景色变化的过渡效果 */
+}
+
+/* 设置按钮的鼠标悬停效果 */
+.submit:hover{
+    background-color: #444; /* 鼠标悬停时背景色变为深灰色 */
+}
+
+#search {
+    padding: 5px 15px;          /* 内边距，增加输入框的可点击区域 */
+    font-size: 14px;             /* 字体大小为14px */
+    border: 1px solid #ccc;     /* 边框颜色为浅灰色 */
+    border-radius: 4px;         /* 圆角效果 */
+    width: 200px;               /* 设置输入框的宽度 */
+    transition: border-color 0.3s; /* 输入框获得焦点时，边框颜色平滑过渡 */
+}
+
+#search:focus {
+    border-color: #222;         /* 获得焦点时，边框颜色变为深色 */
 }
