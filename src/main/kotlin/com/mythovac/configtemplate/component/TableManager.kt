@@ -175,7 +175,7 @@ class TableManager(private val jdbcTemplate: JdbcTemplate, private val passwordE
         price INT NOT NULL CHECK( price >= 0 ),
         sales INT NOT NULL CHECK( sales >= 0 ),
         author CHAR(23) NOT NULL,
-        profile CHAR(255),
+        profile CHAR(255) NOT NULL,
         available BOOL DEFAULT 0 CHECK ( available IN (0,1) )
         );
     """
@@ -205,7 +205,7 @@ class TableManager(private val jdbcTemplate: JdbcTemplate, private val passwordE
         amount INT NOT NULL CHECK( amount > 0 ),
         status CHAR(11) NOT NULL CHECK( status IN ('ongoing','finish','suspend') ),
         otime DATETIME NOT NULL, 
-        sumprice BIGINT NOT NULL,
+        sumprice BIGINT NOT NULL CHECK( sumprice >= 0 ),
         CONSTRAINT KF_operation_account FOREIGN KEY (uid) REFERENCES users (uid)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
