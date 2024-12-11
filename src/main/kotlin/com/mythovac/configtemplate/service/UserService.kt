@@ -33,7 +33,6 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
             // 密码加密存储
             val newPassword = passwordEncoder.encode(password)
             usersImpl.insert(Users(uid = uid, password = newPassword, grade = "vip"))
-            userProfileImpl.insert(UserProfile(uid=uid,gender="secrecy",address="",   "","",""))
             return true
         }
         return false
@@ -94,12 +93,7 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
         return usersImpl.findByUid(uid)
     }
 
-    /**
-     * 查询全部用户具体信息
-     * */
-    fun findAllUserInfos(): List<UserInfo> {
-        return userInfoImpl.findAllUserIndo()
-    }
+
     /**
      * 根据特征查询全部用户具体信息
      * */

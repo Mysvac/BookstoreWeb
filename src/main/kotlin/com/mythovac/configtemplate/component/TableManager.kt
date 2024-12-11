@@ -40,12 +40,13 @@ class TableManager(private val jdbcTemplate: JdbcTemplate, private val passwordE
         createTableCart()
         createTableOperation()
         createTableBill()
-        createTriggerTrgBill()
+        createTriggerTrgOrders()
+        createTriggerTrgUsers()
         // 获取数据信息，从excel表格中
         insertBook()
         // 插入管理员的数据
         insertAdmin()
-        insertAdminProfile()
+        // insertAdminProfile()
     }
 
     /**
@@ -55,7 +56,8 @@ class TableManager(private val jdbcTemplate: JdbcTemplate, private val passwordE
     @PreDestroy
     fun onShutdown() {
         if(dropTablesOnClose.toBoolean()){
-            dropTriggerTrgBill()
+            dropTriggerTrgUsers()
+            dropTriggerTrgOrders()
             dropTableBill()
             dropTableOperation()
             dropTableCart()
@@ -92,8 +94,12 @@ class TableManager(private val jdbcTemplate: JdbcTemplate, private val passwordE
     private fun createTableBill(){ jdbcTemplate.execute(createTableBillSQL) }
     private fun dropTableBill() { jdbcTemplate.execute(dropTableBillSQL) }
 
-    private fun createTriggerTrgBill(){ jdbcTemplate.execute(createTriggerTrgBillSQL) }
-    private fun dropTriggerTrgBill(){ jdbcTemplate.execute(dropTriggerTrgBillSQL) }
+
+    private fun createTriggerTrgOrders(){ jdbcTemplate.execute(createTriggerTrgOrdersSQL) }
+    private fun dropTriggerTrgOrders(){ jdbcTemplate.execute(dropTriggerTrgOrdersSQL) }
+
+    private fun createTriggerTrgUsers() {jdbcTemplate.execute(createTriggerTrgUsersSQL)}
+    private fun dropTriggerTrgUsers() {jdbcTemplate.execute(dropTriggerTrgUsersSQL)}
 
     // 创建初始的管理员账号
     private fun insertAdmin(){
@@ -101,11 +107,7 @@ class TableManager(private val jdbcTemplate: JdbcTemplate, private val passwordE
         val insertAdminSQL = "INSERT INTO users (uid, password, grade) VALUES (?, ?, ?)"
         jdbcTemplate.update(insertAdminSQL, "admin", adminPwd,"admin")
     }
-    // 管理员账号的个性化数据
-    private fun insertAdminProfile(){
-        val insertAdminProfileSQL = "INSERT INTO userProfile (uid, gender) VALUES ('admin', 'secrecy')"
-        jdbcTemplate.update(insertAdminProfileSQL)
-    }
+
 
     // 插入书籍信息
     private fun insertBook(){
@@ -209,7 +211,8 @@ class TableManager(private val jdbcTemplate: JdbcTemplate, private val passwordE
         ON UPDATE CASCADE,
         CONSTRAINT KF_operation_bid FOREIGN KEY (bookid) REFERENCES book (bookid)
         ON DELETE CASCADE
-        ON UPDATE CASCADE
+        ON UPDATE CASCADE,
+        INDEX idx_status (status)
         );
     """
 
@@ -232,8 +235,8 @@ class TableManager(private val jdbcTemplate: JdbcTemplate, private val passwordE
         );
     """
 
-    private val createTriggerTrgBillSQL = """
-        CREATE TRIGGER TRG_bill
+    private val createTriggerTrgOrdersSQL = """
+        CREATE TRIGGER TRG_orders
         AFTER UPDATE ON orders
         FOR EACH ROW
         BEGIN
@@ -243,6 +246,16 @@ class TableManager(private val jdbcTemplate: JdbcTemplate, private val passwordE
                 VALUES (NEW.billid, NEW.uid, NEW.bookid, NEW.amount, NEW.status, NEW.otime, NEW.sumprice);
 
             END IF;
+        END;
+    """
+
+
+    private val createTriggerTrgUsersSQL = """
+        CREATE TRIGGER TRG_users
+        AFTER INSERT ON users
+        FOR EACH ROW
+        BEGIN
+            INSERT INTO userProfile (uid, gender) VALUES (NEW.uid, 'secrecy');
         END;
     """
 
@@ -261,5 +274,8 @@ class TableManager(private val jdbcTemplate: JdbcTemplate, private val passwordE
 
     private val dropTableBillSQL = "DROP TABLE IF EXISTS bill;"
 
-    private val dropTriggerTrgBillSQL = "DROP TRIGGER IF EXISTS TRG_bill;"
+
+    private val dropTriggerTrgOrdersSQL = "DROP TRIGGER IF EXISTS TRG_orders;"
+
+    private val dropTriggerTrgUsersSQL = "DROP TRIGGER IF EXISTS TRG_users"
 }
