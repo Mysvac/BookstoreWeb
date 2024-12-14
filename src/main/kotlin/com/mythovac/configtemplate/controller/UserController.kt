@@ -42,14 +42,14 @@ class UserController(private val userService: UserService) {
         }
 
 //        println("uid: ${uid}")
-//        println("password: ${uid}")
+//        println("password: ${password}")
 
         // 2.解码 这不是数据库加密，是传输过程的加密
         uid = xorEncryptDecrypt(uid,10086)
         password = xorEncryptDecrypt(password,10086)
 
 //        println("uid: ${uid}")
-//        println("password: ${uid}")
+//        println("password: ${password}")
 
         // 3.用户名密码长度验证
         if(uid.length<5 || uid.length > 23 || password.length<8 || password.length>29) {
