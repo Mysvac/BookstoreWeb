@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.security.crypto.password.PasswordEncoder
 
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -352,10 +353,12 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
     /**
      * 删除指定用户的全部购物车数据
      * */
+    @Transactional
     fun deleteCartByUid(uid: String): Boolean {
         cartImpl.deleteByUid(uid)
         return true
     }
+
 
     /**
      * 加入购物车
@@ -388,6 +391,7 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
      * 插入一个新订单，同时减少库存数量
      * 去除购物车中同类项目（通过购物车购买时）
      * */
+    @Transactional
     fun insertOrdersByAttr(uid: String, bookid: Long, amount: Int = -1): String {
         if(amount<=0) return "购买数量异常"  // 数量错误
         val book = bookImpl.findByBookid(bookid) ?: return "书籍不存在" // 书籍不存在
@@ -408,6 +412,7 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
      * 插入一个新订单，同时减少库存数量
      * 不修改购物车（直接下单，未通过购物车购买）
      * */
+    @Transactional
     fun insertOneOrdersByAttr(uid: String, bookid: Long, amount: Int = -1): String {
         if(amount<=0) return "购买数量异常"  // 数量错误
         val book = bookImpl.findByBookid(bookid) ?: return "书籍不存在" // 书籍不存在
@@ -421,6 +426,32 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
         val order = Orders(billid=0,uid=uid,bookid=bookid,amount = amount,otime = time,sumprice = sumprice,status = "ongoing")
         ordersImpl.insert(order)
         return "购买成功"
+    }
+
+    /**
+     * 批量购买图书
+     * */
+    @Transactional
+    fun buyAllBooks(cartbookList: List<Cartbook>, uid: String){
+        for (cartbook in cartbookList) {
+            insertOrdersByAttr(
+                uid = uid,
+                bookid = cartbook.bookid,
+                amount = cartbook.amount
+            )
+        }
+    }
+
+    /**
+     * 清空停售
+     * */
+    @Transactional
+    fun clearUnableBook(cartbookList: List<Cartbook>, uid: String) {
+        for (cartbook in cartbookList) {
+            if (cartbook.available != 1) {
+                deleteCart(uid = uid, bookid = cartbook.bookid)
+            }
+        }
     }
 
     /**

@@ -166,13 +166,7 @@ class DataController(private val userService: UserService) {
         }
 
         // 批量购买
-        for (cartbook in cartbookList) {
-            userService.insertOrdersByAttr(
-                uid = uid,
-                bookid = cartbook.bookid,
-                amount = cartbook.amount
-            )
-        }
+        userService.buyAllBooks(cartbookList=cartbookList,uid=uid)
 
         return ResponseEntity.ok(mapOf("message" to "已全部购买"))
     }
@@ -228,11 +222,7 @@ class DataController(private val userService: UserService) {
         val cartbookList = userService.findCartbookByUid(uid)
 
         // 删除停售的书籍，也就是 available==0 的
-        for (cartbook in cartbookList) {
-            if (cartbook.available != 1) {
-                userService.deleteCart(uid = uid, bookid = cartbook.bookid)
-            }
-        }
+        userService.clearUnableBook(cartbookList=cartbookList,uid=uid)
 
         return ResponseEntity.ok(mapOf("message" to "清空完成"))
     }
