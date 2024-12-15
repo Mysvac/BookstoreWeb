@@ -383,8 +383,16 @@ class UserService(private val jdbcTemplate: JdbcTemplate, private val passwordEn
     /**
      * 修改订单数据
      * */
+    @Transactional
     fun setOrders(orders: Orders) {
         ordersImpl.update(orders)
+        if(orders.status=="suspend"){
+            val book = bookImpl.findByBookid(orders.bookid)
+            if(book!=null){
+                book.stock+=orders.amount
+                bookImpl.update(book)
+            }
+        }
     }
 
     /**

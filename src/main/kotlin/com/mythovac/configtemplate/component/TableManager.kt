@@ -5,11 +5,13 @@ import com.opencsv.CSVReader
 import jakarta.annotation.PreDestroy
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.CommandLineRunner
+import org.springframework.core.io.ClassPathResource
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
 import java.io.FileReader
 import java.io.IOException
+import java.io.InputStreamReader
 
 
 /**
@@ -112,25 +114,50 @@ class TableManager(private val jdbcTemplate: JdbcTemplate, private val passwordE
     // 插入书籍信息
     private fun insertBook(){
         val insertBookSQL = "INSERT INTO book (bookname, booktype, stock, price, sales, author, profile, available) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
-        val csvFile: String = "src/main/resources/static/books.csv"
         try{
-            val reader = CSVReader(FileReader(csvFile))
-            var line: Array<String>?
-            reader.readNext() // 跳过标题
-            while (reader.readNext().also { line = it } != null) {
-                if(line!!.size < 8) continue
-                val book = Book(
-                    bookid = 0,
-                    bookname = line[0],
-                    booktype = line[1],
-                    stock = line[2].toInt(),
-                    price = line[3].toInt(),
-                    sales = line[4].toInt(),
-                    author = line[5],
-                    profile = line[6],
-                    available = line[7].toInt())
-                jdbcTemplate.update(insertBookSQL, book.bookname, book.booktype, book.stock, book.price, book.sales, book.author, book.profile, book.available)
+            // 从静态资源的csv表中加载图书信息
+            val csvFile: String = "static/books.csv"
+            val resource = ClassPathResource(csvFile)
+
+            resource.inputStream.use { inputStream ->
+                // 获取csv内容
+                val reader = CSVReader(InputStreamReader(inputStream))
+
+                // 插入数据库
+                var line: Array<String>?
+                reader.readNext() // 跳过标题
+                while (reader.readNext().also { line = it } != null) {
+                    if(line!!.size < 8) continue
+                    val book = Book(
+                        bookid = 0,
+                        bookname = line[0],
+                        booktype = line[1],
+                        stock = line[2].toInt(),
+                        price = line[3].toInt(),
+                        sales = line[4].toInt(),
+                        author = line[5],
+                        profile = line[6],
+                        available = line[7].toInt())
+                    jdbcTemplate.update(insertBookSQL, book.bookname, book.booktype, book.stock, book.price, book.sales, book.author, book.profile, book.available)
+                }
+                // 处理CSV文件的逻辑
             }
+//            var line: Array<String>?
+//            reader.readNext() // 跳过标题
+//            while (reader.readNext().also { line = it } != null) {
+//                if(line!!.size < 8) continue
+//                val book = Book(
+//                    bookid = 0,
+//                    bookname = line[0],
+//                    booktype = line[1],
+//                    stock = line[2].toInt(),
+//                    price = line[3].toInt(),
+//                    sales = line[4].toInt(),
+//                    author = line[5],
+//                    profile = line[6],
+//                    available = line[7].toInt())
+//                jdbcTemplate.update(insertBookSQL, book.bookname, book.booktype, book.stock, book.price, book.sales, book.author, book.profile, book.available)
+//            }
         }
         catch (e: IOException){
             e.printStackTrace()
